@@ -121,6 +121,10 @@ npm run example
 
 Read the [interface reference](docs/api.md), [contribution guide](CONTRIBUTING.md), and [release instructions](docs/releasing.md).
 
+## Landing page
+
+Run `npm run site:dev` to preview the marketing page and live playground at `http://127.0.0.1:4173`. Run `npm run site:check` to check the site. Build and hosting details are in the [site guide](site/README.md).
+
 ## License
 
 [MIT](LICENSE).

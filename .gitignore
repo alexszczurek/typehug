@@ -1,5 +1,6 @@
 node_modules/
 packages/*/dist/
+site/dist/
 *.tsbuildinfo
 coverage/
 .artifacts/

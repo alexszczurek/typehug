@@ -19,7 +19,10 @@
     "test": "npm run build && node --test tests/*.test.mjs",
     "test:packages": "node scripts/check-packages.mjs",
     "check": "npm run build && npm run typecheck && node --test tests/*.test.mjs && npm run test:packages",
-    "example": "npm run build && node examples/basic.mjs"
+    "example": "npm run build && node examples/basic.mjs",
+    "site:build": "npm run build && node scripts/build-site.mjs",
+    "site:dev": "npm run site:build && node scripts/serve-site.mjs",
+    "site:check": "npm run site:build && tsc --noEmit -p site/tsconfig.json && node --test site/site.test.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

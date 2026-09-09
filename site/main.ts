@@ -1,0 +1,379 @@
+import { glue, glueRuns, type Locale } from "@typehug/all";
+import examples from "./examples.json";
+
+function element<T extends HTMLElement>(
+  id: string,
+  constructor: new () => T,
+): T {
+  const found = document.getElementById(id);
+  if (!(found instanceof constructor)) {
+    throw new Error(`Expected ${id} to be a ${constructor.name}.`);
+  }
+  return found;
+}
+
+const sourceText = element("source-text", HTMLTextAreaElement);
+const beforeText = element("before-text", HTMLParagraphElement);
+const afterText = element("after-text", HTMLParagraphElement);
+const previewPanels = [
+  element("before-panel", HTMLElement),
+  element("after-panel", HTMLElement),
+];
+const previewWidth = element("preview-width", HTMLInputElement);
+const widthValue = element("width-value", HTMLOutputElement);
+const joinCount = element("join-count", HTMLElement);
+const copyResult = element("copy-result", HTMLButtonElement);
+const copyStatus = element("copy-status", HTMLElement);
+const installCommand = element("install-command", HTMLElement);
+const packageDescription = element("package-description", HTMLElement);
+const usageCaveat = element("usage-caveat", HTMLElement);
+const usageCode = {
+  text: element("code-text", HTMLElement),
+  html: element("code-html", HTMLElement),
+  runs: element("code-runs", HTMLElement),
+};
+const usageResults = {
+  text: element("result-text", HTMLParagraphElement),
+  html: element("result-html", HTMLParagraphElement),
+  runs: element("result-runs", HTMLParagraphElement),
+};
+const localeButtons = document.querySelectorAll<HTMLButtonElement>("[data-locale]");
+const packageButtons = document.querySelectorAll<HTMLButtonElement>("[data-package]");
+
+let locale: Locale = "pl";
+let result = "";
+let countAnnouncement: number | undefined;
+const drafts: Record<Locale, string> = {
+  pl: sourceText.value || examples.pl,
+  en: examples.en,
+};
+
+function renderJoinedText(text: string): void {
+  const fragment = document.createDocumentFragment();
+  let offset = 0;
+
+  for (const match of text.matchAll(/[^\s]+(?:\u00a0[^\s]+)+/gu)) {
+    fragment.append(document.createTextNode(text.slice(offset, match.index)));
+    const joined = document.createElement("span");
+    joined.className = "joined";
+    joined.textContent = match[0];
+    fragment.append(joined);
+    offset = match.index + match[0].length;
+  }
+
+  fragment.append(document.createTextNode(text.slice(offset)));
+  afterText.replaceChildren(fragment);
+}
+
+function render(announcementDelay = 0): void {
+  const source = sourceText.value;
+  drafts[locale] = source;
+  result = glue(source, { locale });
+  beforeText.textContent = source;
+  renderJoinedText(result);
+
+  let replacements = 0;
+  for (let index = 0; index < source.length; index += 1) {
+    if (source[index] === " " && result[index] === "\u00a0") {
+      replacements += 1;
+    }
+  }
+
+  window.clearTimeout(countAnnouncement);
+  const announce = () => {
+    joinCount.textContent = `${replacements} nonbreaking ${replacements === 1 ? "space" : "spaces"} added`;
+  };
+  if (announcementDelay > 0) {
+    countAnnouncement = window.setTimeout(announce, announcementDelay);
+  } else {
+    announce();
+  }
+}
+
+function selectLocale(nextLocale: Locale): void {
+  drafts[locale] = sourceText.value;
+  locale = nextLocale;
+  sourceText.value = drafts[locale];
+  for (const preview of [sourceText, beforeText, afterText]) {
+    preview.lang = locale;
+  }
+  for (const button of localeButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.locale === locale));
+  }
+  render();
+}
+
+for (const button of localeButtons) {
+  button.addEventListener("click", () => {
+    const nextLocale = button.dataset.locale;
+    if (nextLocale === "pl" || nextLocale === "en") selectLocale(nextLocale);
+  });
+}
+
+sourceText.addEventListener("input", () => render(400));
+
+let desiredWidth = Number.isFinite(previewWidth.valueAsNumber)
+  ? previewWidth.valueAsNumber
+  : 300;
+
+function panelContentWidth(panel: HTMLElement): number {
+  const style = window.getComputedStyle(panel);
+  return panel.getBoundingClientRect().width
+    - Number.parseFloat(style.paddingLeft)
+    - Number.parseFloat(style.paddingRight)
+    - Number.parseFloat(style.borderLeftWidth)
+    - Number.parseFloat(style.borderRightWidth);
+}
+
+function updateWidth(): void {
+  const availableWidth = Math.floor(Math.min(...previewPanels.map(panelContentWidth)));
+  const maximumWidth = Math.max(1, Math.min(420, availableWidth));
+  const minimumWidth = Math.min(220, maximumWidth);
+  const width = Math.max(minimumWidth, Math.min(maximumWidth, desiredWidth));
+
+  previewWidth.min = String(minimumWidth);
+  previewWidth.max = String(maximumWidth);
+  previewWidth.value = String(width);
+  document.documentElement.style.setProperty("--preview-width", `${width}px`);
+  widthValue.value = `${width} px`;
+  previewWidth.setAttribute("aria-valuetext", `${width} pixels`);
+}
+
+previewWidth.addEventListener("input", () => {
+  if (Number.isFinite(previewWidth.valueAsNumber)) {
+    desiredWidth = previewWidth.valueAsNumber;
+  }
+  updateWidth();
+});
+
+if (typeof ResizeObserver !== "undefined") {
+  const panelObserver = new ResizeObserver(updateWidth);
+  for (const panel of previewPanels) panelObserver.observe(panel);
+} else {
+  window.addEventListener("resize", updateWidth);
+}
+
+type PackageChoice = Locale | "all";
+
+const packageDescriptions: Record<PackageChoice, string> = {
+  pl: "Polish rules and the shared engine. No English rules included.",
+  en: "English rules and the shared engine. No Polish rules included.",
+  all: "Both languages. Choose a locale when you call Typehug.",
+};
+
+function highlightCode(target: HTMLElement, source: string): void {
+  const fragment = document.createDocumentFragment();
+  let offset = 0;
+  for (const match of source.matchAll(/"(?:[^"\\]|\\.)*"|\b(?:import|from|true)\b/gu)) {
+    fragment.append(document.createTextNode(source.slice(offset, match.index)));
+    const token = document.createElement("span");
+    token.className = match[0].startsWith('"') ? "code-string" : "code-keyword";
+    token.textContent = match[0];
+    fragment.append(token);
+    offset = match.index + match[0].length;
+  }
+  fragment.append(document.createTextNode(source.slice(offset)));
+  target.replaceChildren(fragment);
+}
+
+interface ExampleRun {
+  text: string;
+  bold?: boolean;
+}
+
+function renderExampleResult(target: HTMLParagraphElement, runs: readonly ExampleRun[]): void {
+  const text = runs.map((run) => run.text).join("");
+  const fragment = document.createDocumentFragment();
+
+  function appendRange(parent: DocumentFragment | HTMLElement, start: number, end: number): void {
+    let offset = 0;
+    for (const run of runs) {
+      const from = Math.max(0, start - offset);
+      const to = Math.min(run.text.length, end - offset);
+      if (from < to) {
+        const text = run.text.slice(from, to);
+        if (run.bold) {
+          const bold = document.createElement("b");
+          bold.textContent = text;
+          parent.append(bold);
+        } else {
+          parent.append(document.createTextNode(text));
+        }
+      }
+      offset += run.text.length;
+    }
+  }
+
+  let offset = 0;
+  for (const match of text.matchAll(/[^\s]+(?:\u00a0[^\s]+)+/gu)) {
+    appendRange(fragment, offset, match.index);
+    const mark = document.createElement("mark");
+    offset = match.index + match[0].length;
+    appendRange(mark, match.index, offset);
+    fragment.append(mark);
+  }
+  appendRange(fragment, offset, text.length);
+  target.replaceChildren(fragment);
+}
+
+function renderUsage(choice: PackageChoice): void {
+  const exampleLocale: Locale = choice === "en" ? "en" : "pl";
+  const prefix = exampleLocale === "pl" ? "Idę w " : "I have a ";
+  const emphasis = exampleLocale === "pl" ? "dobrym kierunku" : "question";
+  const fullText = `${prefix}${emphasis}.`;
+  const html = `${prefix}<b>${emphasis}</b>.`;
+  const module = `@typehug/${choice}`;
+  const options = choice === "all" ? ', { locale: "pl" }' : "";
+
+  highlightCode(usageCode.text,
+    `import { glue } from ${JSON.stringify(module)};\n\nglue(${JSON.stringify(fullText)}${options});`);
+  highlightCode(usageCode.html,
+    `import { glueHtml } from ${JSON.stringify(`${module}/html`)};\n\nglueHtml(${JSON.stringify(html)}${options});`);
+  highlightCode(usageCode.runs,
+    `import { glueRuns } from ${JSON.stringify(module)};\n\nglueRuns([\n  { text: ${JSON.stringify(prefix)} },\n  { text: ${JSON.stringify(`${emphasis}.`)}, bold: true },\n]${options});`);
+
+  renderExampleResult(usageResults.text, [{ text: glue(fullText, { locale: exampleLocale }) }]);
+  renderExampleResult(usageResults.html, glueRuns([
+    { text: prefix },
+    { text: emphasis, bold: true },
+    { text: "." },
+  ], { locale: exampleLocale }));
+  renderExampleResult(usageResults.runs, glueRuns([
+    { text: prefix },
+    { text: `${emphasis}.`, bold: true },
+  ], { locale: exampleLocale }));
+  for (const result of Object.values(usageResults)) result.lang = exampleLocale;
+
+  const caveat = document.createDocumentFragment();
+  const code = (value: string) => {
+    const element = document.createElement("code");
+    element.textContent = value;
+    return element;
+  };
+  caveat.append(document.createTextNode(`Examples use ${exampleLocale === "pl" ? "Polish" : "English"}. `));
+  if (choice === "all") {
+    caveat.append("The locale argument is required. Use ", code('{ locale: "en" }'), " for English. ");
+  } else {
+    caveat.append("With ", code("@typehug/all"), ", pass ", code('{ locale: "pl" }'),
+      " or ", code('{ locale: "en" }'), " as the second argument. ");
+  }
+  caveat.append(document.createTextNode("HTML is parsed and serialized, so entity spellings and markup may normalize."));
+  usageCaveat.replaceChildren(caveat);
+}
+
+function selectPackage(choice: PackageChoice): void {
+  installCommand.textContent = `npm install @typehug/${choice}`;
+  packageDescription.textContent = packageDescriptions[choice];
+  for (const button of packageButtons) {
+    button.setAttribute("aria-pressed", String(button.dataset.package === choice));
+  }
+  renderUsage(choice);
+}
+
+for (const button of packageButtons) {
+  button.addEventListener("click", () => {
+    const choice = button.dataset.package;
+    if (choice === "pl" || choice === "en" || choice === "all") {
+      selectPackage(choice);
+    }
+  });
+}
+
+interface CopyFeedback {
+  originalLabel: string;
+  attempt: number;
+  reset: number | undefined;
+}
+
+const copyFeedback = new WeakMap<HTMLButtonElement, CopyFeedback>();
+let copyStatusReset: number | undefined;
+let copyStatusVersion = 0;
+
+function announceCopy(message: string): void {
+  window.clearTimeout(copyStatusReset);
+  const version = ++copyStatusVersion;
+  copyStatus.textContent = message;
+  copyStatusReset = window.setTimeout(() => {
+    if (copyStatusVersion === version) copyStatus.textContent = "";
+  }, 4000);
+}
+
+async function copy(
+  button: HTMLButtonElement,
+  content: () => string | Promise<string>,
+  confirmation: string,
+): Promise<void> {
+  let feedback = copyFeedback.get(button);
+  if (!feedback) {
+    feedback = {
+      originalLabel: button.textContent ?? "Copy",
+      attempt: 0,
+      reset: undefined,
+    };
+    copyFeedback.set(button, feedback);
+  }
+  window.clearTimeout(feedback.reset);
+  const attempt = ++feedback.attempt;
+  button.setAttribute("aria-busy", "true");
+
+  try {
+    if (!navigator.clipboard?.writeText) throw new Error("Clipboard is unavailable.");
+    const text = await content();
+    await navigator.clipboard.writeText(text);
+    if (feedback.attempt !== attempt) return;
+    button.textContent = "Copied";
+    announceCopy(confirmation);
+  } catch {
+    if (feedback.attempt !== attempt) return;
+    button.textContent = "Copy failed";
+    announceCopy("Could not copy. Select the text and copy it manually, or open the Markdown link.");
+  } finally {
+    if (feedback.attempt === attempt) {
+      button.removeAttribute("aria-busy");
+      feedback.reset = window.setTimeout(() => {
+        button.textContent = feedback.originalLabel;
+      }, 1800);
+    }
+  }
+}
+
+copyResult.addEventListener("click", () => {
+  void copy(copyResult, () => result, "Corrected text copied.");
+});
+
+for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-target]")) {
+  button.addEventListener("click", () => {
+    void copy(button, () => {
+      const id = button.dataset.copyTarget;
+      const target = id ? document.getElementById(id) : null;
+      if (!target) throw new Error("Copy target is unavailable.");
+      return target.textContent ?? "";
+    }, "Code copied.");
+  });
+}
+
+let markdown: Promise<string> | undefined;
+
+function pageMarkdown(): Promise<string> {
+  markdown ??= fetch(new URL("./index.md", document.baseURI))
+    .then((response) => {
+      if (!response.ok) throw new Error("Markdown could not be loaded.");
+      return response.text();
+    })
+    .catch((error: unknown) => {
+      markdown = undefined;
+      throw error;
+    });
+  return markdown;
+}
+
+for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-page]")) {
+  button.addEventListener("click", () => {
+    void copy(button, pageMarkdown, "Page copied as Markdown.");
+  });
+}
+
+sourceText.value = drafts.pl;
+selectLocale("pl");
+selectPackage("pl");
+updateWidth();

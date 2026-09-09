@@ -1,0 +1,32 @@
+# Typehug landing page
+
+This is a static English landing page with a Polish and English playground. The browser demo imports the real `@typehug/all` engine. All marketing copy and the initial corrected example are present in the built HTML.
+
+```sh
+npm run site:dev
+```
+
+Open `http://127.0.0.1:4173`. This command builds the packages and site, then serves the generated files locally. After editing a source file, run `npm run site:build` and refresh the browser. Use `TYPEHUG_PREVIEW_PORT` to choose a different preview port.
+
+```sh
+npm run site:check
+```
+
+This builds the site, checks its TypeScript, and verifies the static demo, copy targets, links, and exported Markdown.
+
+## Hosting
+
+Run `npm run site:build` and host `site/dist` on a static host. Set `TYPEHUG_SITE_URL` to the final public URL during the build to add canonical and Open Graph URL metadata. Links and assets are relative, so the site also supports a subdirectory such as `/typehug/`.
+
+There is no hosting configuration or automatic deployment. The npm packages remain independent of the website.
+
+## Content and assets
+
+- `index.html` and `styles.css` contain the page content and layout.
+- `main.ts` handles the playground and copying.
+- `examples.json` provides the shared build-time and browser samples.
+- `page.md` is the Markdown version of the page, served at `index.md`.
+- `docs/api.md`, `docs/rules.md`, and the changelog are copied from the repository at build time.
+- `changelog/rss.xml` describes the published release. Update its entry when releasing a new version.
+
+The page uses system fonts, no remote assets, and no analytics. Preview text stays in the browser. There are no scroll or intro animations. Controls use short color transitions only when reduced motion is not requested.
