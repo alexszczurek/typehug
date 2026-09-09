@@ -1,0 +1,48 @@
+{
+  "name": "@typehug/en",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "English typography helpers for text, HTML and rich text.",
+  "license": "MIT",
+  "author": "aliszu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexszczurek/typehug.git",
+    "directory": "packages/en"
+  },
+  "homepage": "https://github.com/alexszczurek/typehug#readme",
+  "bugs": {
+    "url": "https://github.com/alexszczurek/typehug/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    },
+    "./profile": {
+      "types": "./dist/profile.d.ts",
+      "import": "./dist/profile.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@typehug/core": "0.1.0"
+  }
+}

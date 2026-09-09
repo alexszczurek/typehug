@@ -1,0 +1,44 @@
+{
+  "name": "@typehug/core",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Shared text and rich-text engine for Typehug.",
+  "license": "MIT",
+  "author": "aliszu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexszczurek/typehug.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/alexszczurek/typehug#readme",
+  "bugs": {
+    "url": "https://github.com/alexszczurek/typehug/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "parse5": "^8.0.1"
+  }
+}

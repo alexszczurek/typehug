@@ -1,0 +1,46 @@
+{
+  "name": "@typehug/all",
+  "version": "0.1.0",
+  "type": "module",
+  "description": "Polish and English typography helpers in one package.",
+  "license": "MIT",
+  "author": "aliszu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexszczurek/typehug.git",
+    "directory": "packages/all"
+  },
+  "homepage": "https://github.com/alexszczurek/typehug#readme",
+  "bugs": {
+    "url": "https://github.com/alexszczurek/typehug/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./html": {
+      "types": "./dist/html.d.ts",
+      "import": "./dist/html.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@typehug/core": "0.1.0",
+    "@typehug/pl": "0.1.0",
+    "@typehug/en": "0.1.0"
+  }
+}
