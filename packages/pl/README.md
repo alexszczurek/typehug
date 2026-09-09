@@ -4,8 +4,6 @@ Polish typography helpers.
 
 Part of [Typehug](https://github.com/alexszczurek/typehug). Keep words together.
 
-Version 0.1.0 is prepared for release; the initial repository does not publish packages automatically.
-
 ```ts
 import { glue } from "@typehug/pl";
 
