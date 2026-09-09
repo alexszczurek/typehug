@@ -4,8 +4,6 @@ Keep words together.
 
 Typehug inserts nonbreaking spaces in Polish and English text. It works with strings, HTML fragments, and formatted text runs. Install one language or both; each language uses the same engine.
 
-Version `0.1.0` is prepared for release. **The packages have not been published to npm yet.** The install commands below describe the planned public packages. To try the code now, clone this repository and run the local example.
-
 ## Packages
 
 | Package | Includes |

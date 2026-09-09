@@ -1,6 +1,6 @@
 # Changelog
 
-## 0.1.0 — unreleased
+## 0.1.0 — 2026-09-09
 
 - Add Polish and English profiles with individually installable packages and a combined package.
 - Add nonbreaking-space rules for short words, units, initials, selected abbreviations, and short paragraph endings.
