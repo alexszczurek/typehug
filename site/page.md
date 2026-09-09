@@ -1,6 +1,6 @@
 # Typehug
 
-Some words belong together.
+Nonbreaking spaces for Polish and English.
 
 Typehug adds nonbreaking spaces to Polish and English text. Short words, numbers with recognized units, consecutive initials, selected references, and short paragraph endings stay together.
 

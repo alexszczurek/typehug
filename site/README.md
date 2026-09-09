@@ -1,6 +1,6 @@
 # Typehug landing page
 
-This is a static English landing page with a Polish and English playground. The browser demo imports the real `@typehug/all` engine. All marketing copy and the initial corrected example are present in the built HTML.
+This is a static English landing page with a Polish and English playground. A narrow, neutral layout puts the demo, installation, and API examples in one column. The browser demo imports the real `@typehug/all` engine. All page content and the initial corrected example are present in the built HTML.
 
 ```sh
 npm run site:dev

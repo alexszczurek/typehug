@@ -114,7 +114,7 @@ sourceText.addEventListener("input", () => render(400));
 
 let desiredWidth = Number.isFinite(previewWidth.valueAsNumber)
   ? previewWidth.valueAsNumber
-  : 300;
+  : 260;
 
 function panelContentWidth(panel: HTMLElement): number {
   const style = window.getComputedStyle(panel);
@@ -128,7 +128,7 @@ function panelContentWidth(panel: HTMLElement): number {
 function updateWidth(): void {
   const availableWidth = Math.floor(Math.min(...previewPanels.map(panelContentWidth)));
   const maximumWidth = Math.max(1, Math.min(420, availableWidth));
-  const minimumWidth = Math.min(220, maximumWidth);
+  const minimumWidth = Math.min(180, maximumWidth);
   const width = Math.max(minimumWidth, Math.min(maximumWidth, desiredWidth));
 
   previewWidth.min = String(minimumWidth);
