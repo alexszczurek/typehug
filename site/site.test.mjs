@@ -6,8 +6,8 @@ import { fileURLToPath } from "node:url";
 import { runInNewContext } from "node:vm";
 import { parse, parseFragment } from "parse5";
 import { glue } from "@typehug/all";
-import { glue as gluePolish, glueRuns } from "@typehug/pl";
-import { glueHtml } from "@typehug/pl/html";
+import { glue as glueEnglish, glueRuns } from "@typehug/en";
+import { glueHtml } from "@typehug/en/html";
 
 const directory = fileURLToPath(new URL("./dist/", import.meta.url));
 const html = await readFile(path.join(directory, "index.html"), "utf8");
@@ -42,24 +42,24 @@ function formattedCharacters(node, bold = false) {
   return (node.childNodes ?? []).flatMap((child) => formattedCharacters(child, isBold));
 }
 
-test("the prerendered Polish playground contains a real Typehug result", () => {
-  const result = glue(examples.pl, { locale: "pl" });
-  assert.equal(text(byId("before-text")), examples.pl);
-  assert.equal(text(byId("source-text")), examples.pl);
+test("the prerendered English playground contains a real Typehug result", () => {
+  const result = glue(examples.en, { locale: "en" });
+  assert.equal(text(byId("before-text")), examples.en);
+  assert.equal(text(byId("source-text")), examples.en);
   assert.equal(text(byId("after-text")), result);
-  assert.equal(attribute(byId("after-text"), "lang"), "pl");
+  assert.equal(attribute(byId("after-text"), "lang"), "en");
   const selected = one(nodes.filter((node) => attribute(node, "data-locale") !== undefined
     && attribute(node, "aria-pressed") === "true"), "selected playground language");
-  assert.equal(attribute(selected, "data-locale"), "pl");
-  const added = result.split("\u00a0").length - examples.pl.split("\u00a0").length;
+  assert.equal(attribute(selected, "data-locale"), "en");
+  const added = result.split("\u00a0").length - examples.en.split("\u00a0").length;
   assert.equal(text(byId("join-count")), `${added} nonbreaking ${added === 1 ? "space" : "spaces"} added`);
 });
 
 test("the three displayed examples produce their visible text and formatting", () => {
   const implementations = {
-    "code-text": { name: "glue", module: "@typehug/pl", call: gluePolish },
-    "code-html": { name: "glueHtml", module: "@typehug/pl/html", call: glueHtml },
-    "code-runs": { name: "glueRuns", module: "@typehug/pl", call: glueRuns },
+    "code-text": { name: "glue", module: "@typehug/en", call: glueEnglish },
+    "code-html": { name: "glueHtml", module: "@typehug/en/html", call: glueHtml },
+    "code-runs": { name: "glueRuns", module: "@typehug/en", call: glueRuns },
   };
 
   for (const [id, implementation] of Object.entries(implementations)) {

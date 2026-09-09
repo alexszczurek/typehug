@@ -40,12 +40,12 @@ const usageResults = {
 const localeButtons = document.querySelectorAll<HTMLButtonElement>("[data-locale]");
 const packageButtons = document.querySelectorAll<HTMLButtonElement>("[data-package]");
 
-let locale: Locale = "pl";
+let locale: Locale = "en";
 let result = "";
 let countAnnouncement: number | undefined;
 const drafts: Record<Locale, string> = {
-  pl: sourceText.value || examples.pl,
-  en: examples.en,
+  pl: examples.pl,
+  en: sourceText.value || examples.en,
 };
 
 function renderJoinedText(text: string): void {
@@ -217,13 +217,13 @@ function renderExampleResult(target: HTMLParagraphElement, runs: readonly Exampl
 }
 
 function renderUsage(choice: PackageChoice): void {
-  const exampleLocale: Locale = choice === "en" ? "en" : "pl";
+  const exampleLocale: Locale = choice === "pl" ? "pl" : "en";
   const prefix = exampleLocale === "pl" ? "Idę w " : "I have a ";
   const emphasis = exampleLocale === "pl" ? "dobrym kierunku" : "question";
   const fullText = `${prefix}${emphasis}.`;
   const html = `${prefix}<b>${emphasis}</b>.`;
   const module = `@typehug/${choice}`;
-  const options = choice === "all" ? ', { locale: "pl" }' : "";
+  const options = choice === "all" ? ', { locale: "en" }' : "";
 
   highlightCode(usageCode.text,
     `import { glue } from ${JSON.stringify(module)};\n\nglue(${JSON.stringify(fullText)}${options});`);
@@ -252,10 +252,10 @@ function renderUsage(choice: PackageChoice): void {
   };
   caveat.append(document.createTextNode(`Examples use ${exampleLocale === "pl" ? "Polish" : "English"}. `));
   if (choice === "all") {
-    caveat.append("The locale argument is required. Use ", code('{ locale: "en" }'), " for English. ");
+    caveat.append("The locale argument is required. Use ", code('{ locale: "pl" }'), " for Polish. ");
   } else {
-    caveat.append("With ", code("@typehug/all"), ", pass ", code('{ locale: "pl" }'),
-      " or ", code('{ locale: "en" }'), " as the second argument. ");
+    caveat.append("With ", code("@typehug/all"), ", pass ", code('{ locale: "en" }'),
+      " or ", code('{ locale: "pl" }'), " as the second argument. ");
   }
   caveat.append(document.createTextNode("HTML is parsed and serialized, so entity spellings and markup may normalize."));
   usageCaveat.replaceChildren(caveat);
@@ -373,7 +373,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-pa
   });
 }
 
-sourceText.value = drafts.pl;
-selectLocale("pl");
-selectPackage("pl");
+sourceText.value = drafts.en;
+selectLocale("en");
+selectPackage("en");
 updateWidth();

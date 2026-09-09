@@ -1,16 +1,16 @@
 # Typehug
 
-Nonbreaking spaces for Polish and English.
+Nonbreaking spaces for English and Polish.
 
-Typehug adds nonbreaking spaces to Polish and English text. Short words, numbers with recognized units, consecutive initials, selected references, and short paragraph endings stay together.
+Typehug adds nonbreaking spaces to English and Polish text. Short words, numbers with recognized units, consecutive initials, selected references, and short paragraph endings stay together.
 
 ## Install
 
-Install Polish, English, or both:
+Install English, Polish, or both:
 
 ```sh
-npm install @typehug/pl
-# Or: npm install @typehug/en
+npm install @typehug/en
+# Or: npm install @typehug/pl
 # Or: npm install @typehug/all
 ```
 
@@ -19,10 +19,10 @@ The packages provide ESM and TypeScript declarations. Node.js 22 or newer is sup
 ## Plain text
 
 ```ts
-import { glue } from "@typehug/pl";
+import { glue } from "@typehug/en";
 
-glue("Idę w dobrym kierunku.");
-// "Idę w\u00a0dobrym\u00a0kierunku."
+glue("I have a question.");
+// "I\u00a0have a\u00a0question."
 ```
 
 The result contains Unicode nonbreaking spaces. It can be rendered as text, including as a React text child.
@@ -30,10 +30,10 @@ The result contains Unicode nonbreaking spaces. It can be rendered as text, incl
 ## HTML
 
 ```ts
-import { glueHtml } from "@typehug/pl/html";
+import { glueHtml } from "@typehug/en/html";
 
-glueHtml("Idę w <b>dobrym kierunku</b>.");
-// "Idę w&nbsp;<b>dobrym&nbsp;kierunku</b>."
+glueHtml("I have a <b>question</b>.");
+// "I&nbsp;have a&nbsp;<b>question</b>."
 ```
 
 Joins cross supported inline formatting. The separate `/html` entry point imports the parser. The parser is installed with the core package, but plain-text bundles do not include it. HTML is parsed and serialized, so entity spellings and markup may normalize.
@@ -41,11 +41,11 @@ Joins cross supported inline formatting. The separate `/html` entry point import
 ## Formatted runs
 
 ```ts
-import { glueRuns } from "@typehug/pl";
+import { glueRuns } from "@typehug/en";
 
 glueRuns([
-  { text: "Idę w " },
-  { text: "dobrym kierunku.", bold: true },
+  { text: "I have a " },
+  { text: "question.", bold: true },
 ]);
 ```
 
@@ -64,7 +64,7 @@ The combined package requires an explicit locale. There is no automatic language
 
 ## Five rule families
 
-- `shortWords`: Polish a, i, o, u, w, z and their uppercase forms; English a, A, I.
+- `shortWords`: English a, A, I; Polish a, i, o, u, w, z and their uppercase forms.
 - `units`: numbers with recognized unit symbols, such as `30 min`.
 - `initials`: consecutive uppercase initials with periods.
 - `abbreviations`: listed abbreviations and references with suitable following text, such as `Fig. 2`.
@@ -84,6 +84,6 @@ The landing page compares the original and corrected text using the real Typehug
 - [API reference](https://github.com/alexszczurek/typehug/blob/main/docs/api.md)
 - [Rules and sources](https://github.com/alexszczurek/typehug/blob/main/docs/rules.md)
 - [Version 0.1.0](https://github.com/alexszczurek/typehug/releases/tag/v0.1.0)
-- [Polish on npm](https://www.npmjs.com/package/@typehug/pl)
 - [English on npm](https://www.npmjs.com/package/@typehug/en)
+- [Polish on npm](https://www.npmjs.com/package/@typehug/pl)
 - [Both languages on npm](https://www.npmjs.com/package/@typehug/all)

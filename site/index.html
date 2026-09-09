@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#ffffff">
     <title>Typehug · Keep words together</title>
-    <meta name="description" content="Nonbreaking spaces for Polish and English. Typehug works with plain text, HTML, and formatted text runs. Try the playground and install the language you need.">
+    <meta name="description" content="Nonbreaking spaces for English and Polish. Typehug works with plain text, HTML, and formatted text runs. Try the playground and install the language you need.">
     <meta property="og:title" content="Typehug · Keep words together">
-    <meta property="og:description" content="Nonbreaking spaces for Polish and English. Try the live playground, then install just the language you need.">
+    <meta property="og:description" content="Nonbreaking spaces for English and Polish. Try the live playground, then install just the language you need.">
     <meta property="og:type" content="website">
     <meta name="twitter:card" content="summary">
     {{CANONICAL}}
@@ -24,7 +24,7 @@
         <section class="hero" aria-labelledby="hero-title">
           <div class="hug-mark" role="img" aria-label="A number and its unit kept together"><span>30</span><span>min</span><i aria-hidden="true"></i></div>
           <h1 id="hero-title">Typehug</h1>
-          <p class="hero-description">Nonbreaking spaces for Polish and&nbsp;English.</p>
+          <p class="hero-description">Nonbreaking spaces for English and&nbsp;Polish.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#playground">Try Typehug</a>
             <a class="button button-secondary" href="https://github.com/alexszczurek/typehug">GitHub</a>
@@ -36,8 +36,8 @@
           <div class="section-heading"><h2 id="playground-title">Playground</h2><p>Change the width to see which words stay together.</p></div>
           <div class="playground-toolbar">
             <div class="segmented" role="group" aria-label="Playground language">
-              <button type="button" data-locale="pl" aria-pressed="true">Polski</button>
-              <button type="button" data-locale="en" aria-pressed="false">English</button>
+              <button type="button" data-locale="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
+              <button type="button" data-locale="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polski</button>
             </div>
             <span class="demo-hint">Joins are highlighted</span>
           </div>
@@ -45,11 +45,11 @@
             <div class="comparison">
               <div class="preview-panel" id="before-panel">
                 <div class="preview-label">Original</div>
-                <p id="before-text" class="preview-text" lang="pl">{{DEMO_SOURCE}}</p>
+                <p id="before-text" class="preview-text" lang="en">{{DEMO_SOURCE}}</p>
               </div>
               <div class="preview-panel preview-after" id="after-panel">
                 <div class="preview-label">With Typehug</div>
-                <p id="after-text" class="preview-text" lang="pl">{{DEMO_OUTPUT}}</p>
+                <p id="after-text" class="preview-text" lang="en">{{DEMO_OUTPUT}}</p>
               </div>
             </div>
             <div class="playground-controls">
@@ -61,7 +61,7 @@
             <summary>Try your own text <span aria-hidden="true">+</span></summary>
             <div class="edit-demo-content">
               <label for="source-text">Your text</label>
-              <textarea id="source-text" rows="4" maxlength="12000" lang="pl" spellcheck="false">{{DEMO_SOURCE}}</textarea>
+              <textarea id="source-text" rows="4" maxlength="12000" lang="en" spellcheck="false">{{DEMO_SOURCE}}</textarea>
               <div class="edit-demo-footer"><p>Processed in your browser. Only the text is copied.</p><button class="button button-secondary" id="copy-result" type="button">Copy result</button></div>
             </div>
           </details>
@@ -71,12 +71,12 @@
         <section class="install-section section" id="get-started" aria-labelledby="install-title">
           <div class="section-heading"><h2 id="install-title">Installation</h2><p>Choose the language you need. The examples below follow your selection.</p></div>
           <div class="segmented install-tabs" role="group" aria-label="Package to install">
-            <button type="button" data-package="pl" aria-pressed="true">Polish</button>
-            <button type="button" data-package="en" aria-pressed="false">English</button>
+            <button type="button" data-package="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
+            <button type="button" data-package="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polish</button>
             <button type="button" data-package="all" aria-pressed="false">Both</button>
           </div>
-          <div class="install-command"><code id="install-command">npm install @typehug/pl</code><button class="copy-button" type="button" data-copy-target="install-command" aria-label="Copy installation command">Copy</button></div>
-          <p id="package-description" class="package-description" aria-live="polite">Polish rules and the shared engine. No English rules included.</p>
+          <div class="install-command"><code id="install-command">npm install @typehug/en</code><button class="copy-button" type="button" data-copy-target="install-command" aria-label="Copy installation command">Copy</button></div>
+          <p id="package-description" class="package-description" aria-live="polite">English rules and the shared engine. No Polish rules included.</p>
           <p class="install-meta">ESM <span aria-hidden="true">·</span> TypeScript <span aria-hidden="true">·</span> Node.js 22+</p>
         </section>
 
@@ -85,39 +85,39 @@
           <div class="usage-grid">
             <article class="usage-card">
               <div class="usage-card-heading"><h3>Plain text</h3><button class="copy-button" type="button" data-copy-target="code-text" aria-label="Copy plain text example">Copy</button></div>
-              <pre><code id="code-text"><span class="code-keyword">import</span> { glue } <span class="code-keyword">from</span> <span class="code-string">"@typehug/pl"</span>;
+              <pre><code id="code-text"><span class="code-keyword">import</span> { glue } <span class="code-keyword">from</span> <span class="code-string">"@typehug/en"</span>;
 
-glue(<span class="code-string">"Idę w dobrym kierunku."</span>);</code></pre>
-              <div class="code-result"><span>Output</span><p id="result-text" lang="pl">Idę <mark>w&nbsp;dobrym&nbsp;kierunku.</mark></p></div>
+glue(<span class="code-string">"I have a question."</span>);</code></pre>
+              <div class="code-result"><span>Output</span><p id="result-text" lang="en"><mark>I&nbsp;have</mark> <mark>a&nbsp;question.</mark></p></div>
               <p class="usage-note">Returns a string with Unicode nonbreaking spaces. Render it as text, including in React.</p>
             </article>
             <article class="usage-card">
               <div class="usage-card-heading"><h3>HTML</h3><button class="copy-button" type="button" data-copy-target="code-html" aria-label="Copy HTML example">Copy</button></div>
-              <pre><code id="code-html"><span class="code-keyword">import</span> { glueHtml } <span class="code-keyword">from</span> <span class="code-string">"@typehug/pl/html"</span>;
+              <pre><code id="code-html"><span class="code-keyword">import</span> { glueHtml } <span class="code-keyword">from</span> <span class="code-string">"@typehug/en/html"</span>;
 
-glueHtml(<span class="code-string">"Idę w &lt;b&gt;dobrym kierunku&lt;/b&gt;."</span>);</code></pre>
-              <div class="code-result"><span>Output</span><p id="result-html" lang="pl">Idę <mark>w&nbsp;<b>dobrym&nbsp;kierunku</b>.</mark></p></div>
+glueHtml(<span class="code-string">"I have a &lt;b&gt;question&lt;/b&gt;."</span>);</code></pre>
+              <div class="code-result"><span>Output</span><p id="result-html" lang="en"><mark>I&nbsp;have</mark> <mark>a&nbsp;<b>question</b>.</mark></p></div>
               <p class="usage-note">Joins across inline formatting. Importing <code>/html</code> loads the parser.</p>
             </article>
             <article class="usage-card">
               <div class="usage-card-heading"><h3>Formatted runs</h3><button class="copy-button" type="button" data-copy-target="code-runs" aria-label="Copy formatted runs example">Copy</button></div>
-              <pre><code id="code-runs"><span class="code-keyword">import</span> { glueRuns } <span class="code-keyword">from</span> <span class="code-string">"@typehug/pl"</span>;
+              <pre><code id="code-runs"><span class="code-keyword">import</span> { glueRuns } <span class="code-keyword">from</span> <span class="code-string">"@typehug/en"</span>;
 
 glueRuns([
-  { text: <span class="code-string">"Idę w "</span> },
-  { text: <span class="code-string">"dobrym kierunku."</span>, bold: <span class="code-keyword">true</span> },
+  { text: <span class="code-string">"I have a "</span> },
+  { text: <span class="code-string">"question."</span>, bold: <span class="code-keyword">true</span> },
 ]);</code></pre>
-              <div class="code-result"><span>Output</span><p id="result-runs" lang="pl">Idę <mark>w&nbsp;<b>dobrym&nbsp;kierunku.</b></mark></p></div>
+              <div class="code-result"><span>Output</span><p id="result-runs" lang="en"><mark>I&nbsp;have</mark> <mark>a&nbsp;<b>question.</b></mark></p></div>
               <p class="usage-note">Preserves formatting metadata and leaves the input objects unchanged.</p>
             </article>
           </div>
-          <p class="usage-caveat" id="usage-caveat">Examples use Polish. With <code>@typehug/all</code>, pass <code>{ locale: "pl" }</code> or <code>{ locale: "en" }</code> as the second argument. HTML is parsed and serialized, so entity spellings and markup may normalize.</p>
+          <p class="usage-caveat" id="usage-caveat">Examples use English. With <code>@typehug/all</code>, pass <code>{ locale: "en" }</code> or <code>{ locale: "pl" }</code> as the second argument. HTML is parsed and serialized, so entity spellings and markup may normalize.</p>
         </section>
 
         <section class="rules-section section" aria-labelledby="rules-title">
           <div class="section-heading"><h2 id="rules-title">Rules</h2><p>Five rule families, enabled by default. Each can be switched off.</p></div>
           <dl class="rule-list">
-            <div><dt>Short words</dt><dd>Polish a, i, o, u, w, z. English a, A, I.</dd><dd class="rule-example" lang="pl">w&nbsp;domu</dd></div>
+            <div><dt>Short words</dt><dd>English a, A, I. Polish a, i, o, u, w, z.</dd><dd class="rule-example" lang="en">a&nbsp;word</dd></div>
             <div><dt>Units</dt><dd>Numbers with recognized unit symbols.</dd><dd class="rule-example">30&nbsp;min</dd></div>
             <div><dt>Initials</dt><dd>Consecutive uppercase initials.</dd><dd class="rule-example">J.&nbsp;R.</dd></div>
             <div><dt>References</dt><dd>Selected abbreviations and references.</dd><dd class="rule-example">Fig.&nbsp;2</dd></div>

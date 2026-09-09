@@ -36,7 +36,7 @@ function asset(entryPoint) {
 }
 
 const samples = JSON.parse(await read("examples.json"));
-const transformed = glue(samples.pl, { locale: "pl" });
+const transformed = glue(samples.en, { locale: "en" });
 const marked = escape(transformed).replace(/[^\s]+(?:\u00a0[^\s]+)+/gu, '<span class="joined">$&</span>');
 let canonical = "";
 if (process.env.TYPEHUG_SITE_URL) {
@@ -49,9 +49,9 @@ const replacements = {
   CANONICAL: canonical,
   STYLE_URL: asset("site/styles.css"),
   SCRIPT_URL: asset("site/main.ts"),
-  DEMO_SOURCE: escape(samples.pl),
+  DEMO_SOURCE: escape(samples.en),
   DEMO_OUTPUT: marked,
-  DEMO_COUNT: String(samples.pl.split("").filter((character, index) => character === " " && transformed[index] === "\u00a0").length),
+  DEMO_COUNT: String(samples.en.split("").filter((character, index) => character === " " && transformed[index] === "\u00a0").length),
 };
 const html = (await read("index.html")).replace(/\{\{([A-Z_]+)\}\}/gu, (_, key) => {
   if (!(key in replacements)) throw new Error(`Unknown template field ${key}`);

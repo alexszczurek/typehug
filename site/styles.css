@@ -62,7 +62,8 @@
   .playground { gap: 16px; }
   .playground-toolbar { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
   .segmented { display: inline-flex; align-self: flex-start; align-items: center; gap: 4px; }
-  .segmented button { min-height: 44px; padding: 9px 15px; font-size: 13px; line-height: 1.5; border: 1px solid transparent; border-radius: 7px; color: var(--color-muted); white-space: nowrap; }
+  .segmented button { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 9px 15px; font-size: 13px; line-height: 1.5; border: 1px solid transparent; border-radius: 7px; color: var(--color-muted); white-space: nowrap; }
+  .language-flag { font-size: 15px; line-height: 1; }
   .segmented button[aria-pressed="true"] { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border-subtle); box-shadow: var(--shadow-control); }
   .demo-hint { color: var(--color-faint); font-size: 12px; }
   .demo-frame { border: 1px solid var(--color-border-subtle); border-radius: 8px; overflow: hidden; }
