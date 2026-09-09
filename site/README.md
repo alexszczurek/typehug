@@ -16,9 +16,17 @@ This builds the site, checks its TypeScript, and verifies the static demo, copy 
 
 ## Hosting
 
-Run `npm run site:build` and host `site/dist` on a static host. Set `TYPEHUG_SITE_URL` to the final public URL during the build to add canonical and Open Graph URL metadata. Links and assets are relative, so the site also supports a subdirectory such as `/typehug/`.
+The production hostname is `typehug.aliszu.com`. The root `vercel.json` installs the workspace dependencies, builds the site with this canonical URL, and serves only `site/dist`.
 
-There is no hosting configuration or automatic deployment. The npm packages remain independent of the website.
+To publish a validated checkout to the `typehug` project in the `alex-szczureks-projects` Vercel team:
+
+```sh
+vercel deploy --prod --project typehug --scope alex-szczureks-projects
+```
+
+The `typehug` DNS record is managed in Porkbun and must point to the CNAME target provided by Vercel for the custom domain. Vercel manages HTTPS after DNS verification. The npm packages remain independent of website deployments.
+
+For another static host, run `npm run site:build` and serve `site/dist`. Set `TYPEHUG_SITE_URL` during the build to add canonical and Open Graph URL metadata. Links and assets are relative, so the site also supports a subdirectory such as `/typehug/`.
 
 ## Content and assets
 

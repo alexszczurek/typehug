@@ -5,4 +5,5 @@ site/dist/
 coverage/
 .artifacts/
 .DS_Store
+.vercel/
 *.tgz
