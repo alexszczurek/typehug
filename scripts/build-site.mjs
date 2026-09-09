@@ -38,15 +38,17 @@ function asset(entryPoint) {
 const samples = JSON.parse(await read("examples.json"));
 const transformed = glue(samples.en, { locale: "en" });
 const marked = escape(transformed).replace(/[^\s]+(?:\u00a0[^\s]+)+/gu, '<span class="joined">$&</span>');
+const siteUrl = new URL(process.env.TYPEHUG_SITE_URL || "https://typehug.aliszu.com/");
+if (!["http:", "https:"].includes(siteUrl.protocol)) throw new Error("TYPEHUG_SITE_URL must be an HTTP(S) URL.");
+if (!siteUrl.pathname.endsWith("/")) siteUrl.pathname += "/";
 let canonical = "";
 if (process.env.TYPEHUG_SITE_URL) {
-  const url = new URL(process.env.TYPEHUG_SITE_URL);
-  if (!["http:", "https:"].includes(url.protocol)) throw new Error("TYPEHUG_SITE_URL must be an HTTP(S) URL.");
-  canonical = `<link rel="canonical" href="${escape(url.href)}">\n    <meta property="og:url" content="${escape(url.href)}">`;
+  canonical = `<link rel="canonical" href="${escape(siteUrl.href)}">\n    <meta property="og:url" content="${escape(siteUrl.href)}">`;
 }
 
 const replacements = {
   CANONICAL: canonical,
+  OG_IMAGE_URL: escape(new URL("og-image.png", siteUrl).href),
   STYLE_URL: asset("site/styles.css"),
   SCRIPT_URL: asset("site/main.ts"),
   DEMO_SOURCE: escape(samples.en),
@@ -59,6 +61,7 @@ const html = (await read("index.html")).replace(/\{\{([A-Z_]+)\}\}/gu, (_, key) 
 });
 await writeFile(path.join(output, "index.html"), html);
 await copyFile(path.join(source, "favicon.svg"), path.join(output, "favicon.svg"));
+await copyFile(path.join(source, "og-image.png"), path.join(output, "og-image.png"));
 await copyFile(path.join(source, "page.md"), path.join(output, "index.md"));
 await mkdir(path.join(output, "docs"), { recursive: true });
 for (const name of ["api.md", "rules.md"]) {

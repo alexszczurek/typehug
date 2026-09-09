@@ -32,13 +32,14 @@ Configure this DNS record in Porkbun. Vercel supplied this target when the custo
 
 Vercel manages HTTPS after DNS verification. Run `vercel domains verify typehug.aliszu.com --scope alex-szczureks-projects` to check the current status and recommended record. The npm packages remain independent of website deployments.
 
-For another static host, run `npm run site:build` and serve `site/dist`. Set `TYPEHUG_SITE_URL` during the build to add canonical and Open Graph URL metadata. Links and assets are relative, so the site also supports a subdirectory such as `/typehug/`.
+For another static host, run `npm run site:build` and serve `site/dist`. Set `TYPEHUG_SITE_URL` during the build to add canonical and Open Graph URL metadata and set the absolute social preview image URL. Without this setting, the image URL defaults to `https://typehug.aliszu.com/og-image.png`. The site also supports a subdirectory such as `/typehug/`: set the full base URL, for example `https://example.com/typehug/`.
 
 ## Content and assets
 
 - `index.html` and `styles.css` contain the page content and layout.
 - `main.ts` handles the playground and copying.
 - `examples.json` provides the shared build-time and browser samples.
+- `og-image.png` is the 1200 × 630 social preview, copied unchanged to the site root. `og-image.svg` is its editable source.
 - `page.md` is the Markdown version of the page, served at `index.md`.
 - `docs/api.md`, `docs/rules.md`, and the changelog are copied from the repository at build time.
 - `changelog/rss.xml` describes the published release. Update its entry when releasing a new version.

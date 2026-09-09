@@ -136,6 +136,25 @@ test("the built page has no unresolved templates or broken local assets and anch
     }
   }
   assert.ok(localLinks > 0, "The page links its built assets");
+
+  const metadata = (name) => attribute(one(nodes.filter((node) => node.tagName === "meta"
+    && (attribute(node, "property") === name || attribute(node, "name") === name)), `${name} metadata`), "content");
+  const imageUrl = new URL(metadata("og:image"));
+  const siteUrl = new URL(process.env.TYPEHUG_SITE_URL || "https://typehug.aliszu.com/");
+  assert.equal(imageUrl.origin, siteUrl.origin, "Social previews use the configured website origin");
+  assert.equal(imageUrl.pathname, `${siteUrl.pathname.replace(/\/$/u, "")}/og-image.png`, "Social previews preserve the website subdirectory");
+  assert.equal(metadata("twitter:image"), imageUrl.href);
+  assert.equal(metadata("twitter:card"), "summary_large_image");
+  assert.equal(metadata("og:image:type"), "image/png");
+  assert.ok(metadata("og:image:alt").trim(), "The social preview has alternative text");
+  assert.equal(metadata("twitter:image:alt"), metadata("og:image:alt"));
+  const preview = await readFile(path.join(directory, "og-image.png"));
+  assert.deepEqual(preview.subarray(0, 8), Buffer.from([137, 80, 78, 71, 13, 10, 26, 10]), "The preview is a PNG");
+  assert.equal(preview.toString("ascii", 12, 16), "IHDR");
+  assert.equal(preview.readUInt32BE(16), 1200);
+  assert.equal(preview.readUInt32BE(20), 630);
+  assert.equal(Number(metadata("og:image:width")), preview.readUInt32BE(16));
+  assert.equal(Number(metadata("og:image:height")), preview.readUInt32BE(20));
 });
 
 test("Markdown exports match their sources and the release feed is linked", async () => {

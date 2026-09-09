@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
+  <title>Typehug</title>
+  <desc>Nonbreaking spaces for English and Polish. A number and its unit, 30 min, stay together.</desc>
+  <defs>
+    <filter id="tile-shadow" x="-30%" y="-40%" width="160%" height="190%">
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#171717" flood-opacity=".035"/>
+      <feDropShadow dx="0" dy="5" stdDeviation="8" flood-color="#171717" flood-opacity=".025"/>
+    </filter>
+  </defs>
+
+  <rect width="1200" height="630" fill="#ffffff"/>
+
+  <g filter="url(#tile-shadow)">
+    <rect x="492" y="115" width="216" height="82" rx="15" fill="#ffffff" stroke="#e9e9e9"/>
+  </g>
+  <path d="M592 116v80" stroke="#dedede" stroke-dasharray="3 4"/>
+  <g font-family="SFMono-Regular, Menlo, Consolas, monospace" font-size="31" letter-spacing="-1.2" fill="#626262" text-anchor="middle">
+    <text x="543" y="166">30</text>
+    <text x="649" y="166">min</text>
+  </g>
+  <path d="M558 213v6a5 5 0 0 0 5 5h74a5 5 0 0 0 5-5v-6" fill="none" stroke="#bcbcbc" stroke-width="1.5"/>
+
+  <text x="600" y="360" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="130" font-weight="700" letter-spacing="-7" fill="#171717">Typehug</text>
+  <text x="600" y="426" text-anchor="middle" font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="31" letter-spacing="-.45" fill="#666666">Nonbreaking spaces for English and Polish.</text>
+
+  <g font-family="Helvetica Neue, Helvetica, Arial, sans-serif" font-size="21" fill="#777777">
+    <text x="72" y="568">Open source · npm</text>
+    <text x="1128" y="568" text-anchor="end">typehug.aliszu.com</text>
+  </g>
+</svg>
