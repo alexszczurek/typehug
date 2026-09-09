@@ -7,3 +7,4 @@ coverage/
 .DS_Store
 .vercel/
 *.tgz
+.env*

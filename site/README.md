@@ -24,7 +24,13 @@ To publish a validated checkout to the `typehug` project in the `alex-szczureks-
 vercel deploy --prod --project typehug --scope alex-szczureks-projects
 ```
 
-The `typehug` DNS record is managed in Porkbun and must point to the CNAME target provided by Vercel for the custom domain. Vercel manages HTTPS after DNS verification. The npm packages remain independent of website deployments.
+Configure this DNS record in Porkbun. Vercel supplied this target when the custom domain was attached:
+
+| Type | Host | Answer |
+| --- | --- | --- |
+| CNAME | `typehug` | `9f8b95a9e8562492.vercel-dns-016.com` |
+
+Vercel manages HTTPS after DNS verification. Run `vercel domains verify typehug.aliszu.com --scope alex-szczureks-projects` to check the current status and recommended record. The npm packages remain independent of website deployments.
 
 For another static host, run `npm run site:build` and serve `site/dist`. Set `TYPEHUG_SITE_URL` during the build to add canonical and Open Graph URL metadata. Links and assets are relative, so the site also supports a subdirectory such as `/typehug/`.
 
