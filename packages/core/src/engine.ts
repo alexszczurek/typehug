@@ -10,6 +10,7 @@ const HARD_BREAK = /[\r\n\t\v\f\u0085\u2028\u2029]/u;
 const NONBREAKING_GAP = /^[\u00a0\u202f]+$/u;
 const NUMBER = /^[+\-−]?(?:\p{Nd}+(?:[.,]\p{Nd}+)*|[.,]\p{Nd}+)$/u;
 const INITIAL = /^\p{Lu}\p{M}*\.$/u;
+const INITIAL_TRAILING = /[,;:!?！？"'”’»›)\]}]+$/u;
 
 interface Token {
   text: string;
@@ -81,8 +82,10 @@ export function glue(text: string, profile: LanguageProfile, options: GlueOption
     const kind = abbreviations.get(withoutOpening(left.text));
     return kind !== undefined && matchesFollowing(right.text, kind);
   };
+  // Only the right initial may end with punctuation. Keeping the left strict
+  // prevents this rule from joining separate sequences across a comma.
   const isInitialPair = (left: Token, right: Token): boolean =>
-    INITIAL.test(withoutOpening(left.text)) && INITIAL.test(withoutOpening(right.text).replace(CLOSING, ""));
+    INITIAL.test(withoutOpening(left.text)) && INITIAL.test(withoutOpening(right.text).replace(INITIAL_TRAILING, ""));
 
   const canJoin = (index: number): boolean => {
     const left = tokens[index]!;

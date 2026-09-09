@@ -6,7 +6,7 @@
 
 ```ts
 glue(text: string, options?: GlueOptions): string;
-glueRuns<T extends TextRun>(runs: readonly T[], options?: GlueOptions): T[];
+glueRuns<T extends TextRun>(runs: readonly T[], options?: GlueOptions): GluedRun<T>[];
 ```
 
 Their `/html` entry points export:
@@ -37,11 +37,17 @@ interface TextRun {
   skip?: boolean;
   breakBefore?: boolean;
 }
+
+type GluedRun<T extends TextRun> = {
+  [Key in keyof T]: Key extends "text" ? string : T[Key];
+};
 ```
 
 Every family defaults to enabled. Only `false` disables it. Inputs must match the declared types; arbitrary JavaScript input is not coerced into text.
 
-Additional run properties are inferred and retained. Nested metadata is carried through by reference, without changes. Typehug replaces only single UTF-16 code units with U+00A0, so source offsets and run text lengths stay valid. Runs may split words, combining sequences, or surrogate pairs; processing occurs after concatenation.
+Additional run properties are inferred and retained. The returned `GluedRun<T>` type widens `text` to `string` because its contents may change, even when the input uses a string literal or `as const`. Metadata retains its literal types, optional and readonly modifiers, and discriminated union branches. `GluedRun` is exported by all four package roots.
+
+Nested metadata is carried through by reference, without changes. Typehug replaces only single UTF-16 code units with U+00A0, so source offsets and run text lengths stay valid. Runs may split words, combining sequences, or surrogate pairs; processing occurs after concatenation.
 
 Newlines in strings are boundaries. `breakBefore` introduces a boundary without inserting a newline into the output. `skip` starts a boundary, leaves its own text alone, and prevents continuation through it.
 

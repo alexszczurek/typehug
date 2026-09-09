@@ -40,6 +40,8 @@ This is a finite practical dictionary. Byte symbols and customary units are edit
 
 Consecutive uppercase initials followed by periods are kept together: `J. R. R.` becomes `J. R. R.`. Combining marks on an uppercase initial are accepted. Lowercase initials are not assumed to be names. The rule does not automatically join the final initial to a surname.
 
+The final initial may have a comma, semicolon, colon, closing quotation mark, or closing bracket after its required period. Question marks and exclamation marks are also accepted, including `？` and `！`. For example, `Kowalski, J. R., Nowak, A. B.` becomes `Kowalski, J. R., Nowak, A. B.`. Punctuation stays intact, and this rule does not join across punctuation into the next initials sequence. Newlines and repeated spaces still prevent a join.
+
 [Chicago's line-break guidance](https://www.chicagomanualofstyle.org/qanda/data/faq/topics/WordDivision/faq0006.html) discusses keeping consecutive initials together.
 
 ## Abbreviations and references

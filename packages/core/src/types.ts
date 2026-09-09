@@ -12,6 +12,11 @@ export interface TextRun {
   breakBefore?: boolean;
 }
 
+/** Transformed text is a string; metadata keeps its original type and modifiers. */
+export type GluedRun<T extends TextRun> = {
+  [Key in keyof T]: Key extends "text" ? string : T[Key];
+};
+
 export interface Abbreviation {
   text: string;
   followedBy: "word" | "capitalized" | "number";

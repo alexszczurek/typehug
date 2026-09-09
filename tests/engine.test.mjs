@@ -65,6 +65,55 @@ test("consecutive dotted uppercase initials stay together without assuming surna
   assert.equal(en("j. r. writer and J. Smith", noEnding), "j. r. writer and J. Smith");
 });
 
+test("terminal initial punctuation preserves joins within each initials sequence", () => {
+  const cases = [
+    ["Kowalski, J. R., Nowak, A. B.", "Kowalski, J.~R., Nowak, A.~B."],
+    ["J. R., A. B.", "J.~R., A.~B."],
+    ["J. R.; A. B.", "J.~R.; A.~B."],
+    ["J. R.: A. B.", "J.~R.: A.~B."],
+    ["J. R.! A. B.", "J.~R.! A.~B."],
+    ["J. R.? A. B.", "J.~R.? A.~B."],
+    ["J. R.！ A. B.", "J.~R.！ A.~B."],
+    ["J. R.？ A. B.", "J.~R.？ A.~B."],
+    ["(J. R.), A. B.", "(J.~R.), A.~B."],
+    ["„Ł. Ż.,”", "„Ł.~Ż.,”"],
+    ["(E\u0301. Ł.); A. B.", "(E\u0301.~Ł.); A.~B."],
+  ];
+  for (const glue of [pl, en]) {
+    for (const [input, expected] of cases) {
+      const output = expected.replaceAll("~", NBSP);
+      assert.equal(glue(input), output, input);
+      assert.equal(glue(output), output, `repeat: ${input}`);
+    }
+  }
+});
+
+test("initial punctuation does not relax periods, case, whitespace or sequence barriers", () => {
+  const unchanged = [
+    "J. R,", "J. R;", "J. R:", "J. R!", "J. R?", "J. R..,", "J. r.,", "j. R.,",
+    "J., R.", "J.; R.", "J.: R.", "J.), R.",
+    "J.! R.", "J.? R.", "J.！ R.", "J.？ R.",
+    "J.  R.,", "J.\nR.,", "J.\r\nR.,", "J.\tR.,",
+    "J.\u00a0R.,", "J.\u202fR.,",
+  ];
+  for (const glue of [pl, en]) {
+    for (const input of unchanged) assert.equal(glue(input, noEnding), input, input);
+    assert.equal(glue("J. R., A.", noEnding), "J.\u00a0R., A.");
+    assert.equal(glue("J. R.,", { rules: { initials: false } }), "J. R.,");
+  }
+});
+
+test("terminal initial punctuation counts toward the group limit", () => {
+  for (const glue of [pl, en]) {
+    const exact = `${"J. ".repeat(15)}R.,`;
+    assert.equal(glue(exact, noEnding), exact.replaceAll(" ", NBSP));
+    const over = `${"J. ".repeat(16)}R.,`;
+    const output = `${"J.\u00a0".repeat(15)}J. R.,`;
+    assert.equal(glue(over, noEnding), output);
+    assert.equal(glue(output, noEnding), output);
+  }
+});
+
 test("ending heuristic needs three words and respects paragraphs and sentence punctuation", () => {
   const cases = [
     ["One two three", "One two~three"],
@@ -153,7 +202,7 @@ test("empty input and custom data profiles work without built-in language assump
 });
 
 test("mixed Unicode, whitespace, punctuation and long chains are idempotent", () => {
-  const words = ["a", "I", "w", "z", "word", "dom", "10", "kg", "Dr.", "Smith", "m.in.", "J.", "R.", "😀x", "Ł.", "stop.", "x".repeat(46), "https://example.org", "a@b.pl"];
+  const words = ["a", "I", "w", "z", "word", "dom", "10", "kg", "Dr.", "Smith", "m.in.", "J.", "R.", "R.,", "R.;", "R.:", "😀x", "Ł.", "stop.", "x".repeat(46), "https://example.org", "a@b.pl"];
   const gaps = [" ", " ", " ", "\u00a0", "\u202f", "  ", "\n", "\r\n", "\t"];
   let state = 123456789;
   const next = (size) => {

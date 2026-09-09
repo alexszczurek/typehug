@@ -50,6 +50,21 @@ test("word fragments are evaluated as complete words", () => {
   assert.equal(plRuns(source, onlyShortWords).map((run) => run.text).join(""), pl("sowa i kotara", onlyShortWords));
 });
 
+test("initials accept terminal punctuation across runs and respect protected boundaries", () => {
+  for (const glueRuns of [plRuns, enRuns]) {
+    const source = [{ text: "Kowalski, J.", bold: true }, { text: " " }, { text: "R." }, { text: ", Nowak, A. B." }];
+    const expected = [{ text: "Kowalski, J.", bold: true }, { text: nbsp }, { text: "R." }, { text: `, Nowak, A.${nbsp}B.` }];
+    assert.deepEqual(glueRuns(source), expected);
+    assert.deepEqual(glueRuns(expected), expected);
+    for (const marker of [{ text: "", skip: true }, { text: "", breakBefore: true }]) {
+      const split = [{ text: "J." }, marker, { text: " R.," }];
+      assert.deepEqual(glueRuns(split), split);
+    }
+    const protectedInitial = [{ text: "J. " }, { text: "R.,", skip: true }];
+    assert.deepEqual(glueRuns(protectedInitial), protectedInitial);
+  }
+});
+
 test("every UTF-16 split position yields the same text as a plain-text call", () => {
   const scenarios = [
     [pl, plRuns, "🙂 Idę w zażółcony świat."],

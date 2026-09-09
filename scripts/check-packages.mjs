@@ -80,7 +80,8 @@ try {
       await copyFile(join(root, "tests/types/tsconfig.json"), join(consumer, "tsconfig.json"));
       run(process.execPath, [join(root, "node_modules/typescript/bin/tsc"), "-p", join(consumer, "tsconfig.json")], consumer);
       const allManifest = JSON.parse(await readFile(join(consumer, "node_modules/@typehug/all/package.json"), "utf8"));
-      assert.equal(allManifest.version, "0.1.0");
+      const sourceManifest = JSON.parse(await readFile(join(root, "packages/all/package.json"), "utf8"));
+      assert.equal(allManifest.version, sourceManifest.version);
       console.log("@typehug/all: packed text, runs, HTML and TypeScript imports passed");
     }
   }

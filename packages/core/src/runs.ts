@@ -1,12 +1,17 @@
 import { glue } from "./engine.js";
-import type { GlueOptions, LanguageProfile, TextRun } from "./types.js";
+import type { GluedRun, GlueOptions, LanguageProfile, TextRun } from "./types.js";
 
 /** Process adjacent text as a whole, then map same-length edits back to the runs. */
 export function glueRuns<T extends TextRun>(
   runs: readonly T[],
   profile: LanguageProfile,
   options?: GlueOptions,
-): T[] {
+): GluedRun<T>[];
+export function glueRuns(
+  runs: readonly TextRun[],
+  profile: LanguageProfile,
+  options?: GlueOptions,
+): TextRun[] {
   const result = runs.map((run) => ({ ...run }));
   let segment: number[] = [];
 

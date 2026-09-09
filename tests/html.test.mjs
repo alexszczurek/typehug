@@ -34,6 +34,20 @@ test("HTML sees complete words across adjacent formatting nodes", () => {
   );
 });
 
+test("initials retain terminal punctuation across HTML formatting and protected boundaries", () => {
+  for (const glueHtml of [pl, en]) {
+    const source = "<p>Kowalski, <b>J.</b> <i>R.</i>, Nowak, A. B.</p>";
+    const expected = `<p>Kowalski, <b>J.</b>${nbsp}<i>R.</i>, Nowak, A.${nbsp}B.</p>`;
+    const result = glueHtml(source);
+    assert.equal(normalized(result), expected);
+    assert.equal(glueHtml(result), result);
+    for (const boundary of ["<br>", "<code></code>", '<span data-typehug-skip=""></span>']) {
+      const split = `<p>J. ${boundary}R.,</p>`;
+      assert.equal(normalized(glueHtml(split)), split);
+    }
+  }
+});
+
 test("anchor labels participate while attribute values keep their meaning", () => {
   const result = pl('<p>Idę w <a href="/w domu?x=1&amp;y=2" title="w domu">dobrym kierunku</a>.</p>');
   assert.equal(
