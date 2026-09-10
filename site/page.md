@@ -80,14 +80,14 @@ The landing page compares original and corrected text using Typehug's plain-text
 
 The preview explains actual changes. A no-changes result means the selected rules made no edits; it does not assess every aspect of typography or list skipped cases. Text stays in the browser. Highlights and explanations are not part of the copied corrected text.
 
-Copy the corrected text or the npm example. The example uses the published `glue` API with the selected locale and rule settings. The playground's `analyze` API, result types, and rule descriptions are unreleased and are not included in npm `0.1.0` yet. See the [development API reference](./docs/api.md#change-analysis-unreleased).
+Copy the corrected text or the npm example. The example uses `glue` with the selected locale and rule settings. The playground's `analyze` API, result types, and rule descriptions are available since `0.2.0`. Use them to display change explanations in your application. See the [analysis API reference](./docs/api.md#change-analysis).
 
 ## Links
 
 - [GitHub](https://github.com/alexszczurek/typehug)
 - [API reference](https://github.com/alexszczurek/typehug/blob/main/docs/api.md)
 - [Rules and sources](https://github.com/alexszczurek/typehug/blob/main/docs/rules.md)
-- [Version 0.1.0](https://github.com/alexszczurek/typehug/releases/tag/v0.1.0)
+- [Version 0.2.0](https://github.com/alexszczurek/typehug/releases/tag/v0.2.0)
 - [English on npm](https://www.npmjs.com/package/@typehug/en)
 - [Polish on npm](https://www.npmjs.com/package/@typehug/pl)
 - [Both languages on npm](https://www.npmjs.com/package/@typehug/all)

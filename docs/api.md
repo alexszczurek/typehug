@@ -6,6 +6,7 @@
 
 ```ts
 glue(text: string, options?: GlueOptions): string;
+analyze(text: string, options?: GlueOptions): AnalysisResult;
 glueRuns<T extends TextRun>(runs: readonly T[], options?: GlueOptions): GluedRun<T>[];
 ```
 
@@ -19,13 +20,13 @@ Both language roots and `/profile` exports expose `profile`. A profile is frozen
 
 ## Combined package
 
-`@typehug/all` provides the same text and runs functions. `@typehug/all/html` provides the HTML function. Each requires an options object with `locale: "pl" | "en"`, along with optional rule overrides.
+`@typehug/all` provides the same text, analysis, and runs functions. `@typehug/all/html` provides the HTML function. Each requires an options object with `locale: "pl" | "en"`, along with optional rule overrides.
 
 Missing, unknown, or differently cased locale values throw `RangeError` at runtime. There is no fallback, browser-language lookup, or locale normalization.
 
-## Change analysis, unreleased
+## Change analysis
 
-The development checkout adds the following API. `analyze`, `AnalysisResult`, `TextChange`, and `ruleDescriptions` are not yet available in the published `0.1.0` packages. Existing `glue`, `glueRuns`, and `glueHtml` behavior remains unchanged.
+Available since `0.2.0`. `analyze` returns corrected text and the accepted space replacements. `AnalysisResult`, `TextChange`, and `ruleDescriptions` support applications that display these changes. Existing `glue`, `glueRuns`, and `glueHtml` behavior remains unchanged.
 
 ```ts
 // @typehug/pl and @typehug/en:
@@ -168,7 +169,6 @@ Core functions accept the profile immediately after their input:
 ```ts
 glue(text, profile, options?);
 glueRuns(runs, profile, options?);
-// Unreleased:
 analyze(text, profile, options?);
 // From @typehug/core/html:
 glueHtml(fragment, profile, options?);

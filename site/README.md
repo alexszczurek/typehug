@@ -2,7 +2,7 @@
 
 This is a static English landing page with an English and Polish playground, initially set to English. A narrow, neutral layout puts the demo, installation, and API examples in one column. The browser demo uses the workspace's public `analyze` and `ruleDescriptions` exports from `@typehug/all`. All page content and the initial corrected example are present in the built HTML.
 
-Analysis is unreleased; published npm packages remain at `0.1.0`. The copyable npm example therefore uses the existing `glue` API with the selected locale and rule-family settings. It reproduces the corrected text without requiring the unreleased explanation API.
+The analysis API, result types, and rule descriptions are available since `0.2.0`. The copyable npm example uses `glue` with the selected locale and rule-family settings to reproduce the corrected text. Use `analyze` when an application also needs the change records.
 
 The playground explains actual replacements and their supporting rule families. It does not list skipped candidates or certify unchanged text. All five families begin enabled; when families overlap, disabling one can leave an edit supported by another. Change explanations remain visible without hover, and copy actions exclude the preview annotations.
 
@@ -46,6 +46,6 @@ For another static host, run `npm run site:build` and serve `site/dist`. Set `TY
 - `og-image.png` is the 1200 × 630 social preview, copied unchanged to the site root. `og-image.svg` is its editable source.
 - `page.md` is the Markdown version of the page, served at `index.md`.
 - `docs/api.md`, `docs/rules.md`, and the changelog are copied from the repository at build time.
-- `changelog/rss.xml` describes the published release. Update its entry when releasing a new version.
+- `changelog/rss.xml` describes published releases. Add the new release in `scripts/build-site.mjs`, preserving earlier entries, and update the version links in `index.html` and `page.md`.
 
 The page uses system fonts, no remote assets, and no analytics. Preview text stays in the browser. There are no scroll or intro animations. Controls use short color transitions only when reduced motion is not requested.

@@ -47,9 +47,9 @@ glue("I have a question.", { locale: "en" });
 
 There is no language detection. A missing or unsupported locale in `@typehug/all` throws a `RangeError`.
 
-## Change explanations, unreleased
+## Change explanations
 
-The development checkout adds `analyze`, its result types, and `ruleDescriptions`. These exports are not available in the published `0.1.0` packages yet. Use the existing `glue` examples above with that release.
+Available since `0.2.0`. Use `analyze` to get corrected text and an explanation for each replaced space. All four package roots export `analyze`, its result types, and `ruleDescriptions`.
 
 ```ts
 import { analyze, ruleDescriptions } from "@typehug/en";
@@ -70,7 +70,7 @@ for (const change of result.changes) {
 
 `result.text` equals `glue` with the same input and options. Each change identifies one replaced space using UTF-16 offsets into the original string, with an exclusive `end`, and lists every active supporting rule family. In this example, disabling only `units` still permits `lastWords` to make the change; disable both to leave the space unchanged.
 
-Analysis accepts plain text. An empty `changes` array means these rules made no changes; it does not certify the text's typography or explain skipped candidates. Existing nonbreaking spaces and rejected joins are not reported as new changes. See the [analysis schema, offsets, and package signatures](docs/api.md#change-analysis-unreleased).
+Analysis accepts plain text. An empty `changes` array means these rules made no changes; it does not certify the text's typography or explain skipped candidates. Existing nonbreaking spaces and rejected joins are not reported as new changes. See the [analysis schema, offsets, and package signatures](docs/api.md#change-analysis).
 
 ## HTML
 
@@ -108,7 +108,7 @@ Adjacent runs are interpreted as one text segment, even if a word is split betwe
 - `skip: true` protects a run and stops joins on both sides.
 - Empty runs may carry either boundary marker.
 
-Notion, Slate, ProseMirror, and Markdown AST adapters are not included in `0.1.0`. Map their text and paragraph boundaries to runs explicitly.
+Notion, Slate, ProseMirror, and Markdown AST adapters are not included in `0.2.0`. Map their text and paragraph boundaries to runs explicitly.
 
 ## Rules
 

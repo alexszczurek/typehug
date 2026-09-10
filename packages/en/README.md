@@ -10,7 +10,21 @@ import { glue } from "@typehug/en";
 glue("I have a question.");
 ```
 
-The root export provides `glue`, `glueRuns`, and TypeScript types. Use `@typehug/en/html` for `glueHtml`. The HTML parser is kept outside the plain-text import graph, but remains an installed dependency of the shared core.
+The root export provides `glue`, `analyze`, `glueRuns`, `ruleDescriptions`, and TypeScript types. Use `@typehug/en/html` for `glueHtml`. The HTML parser is kept outside the plain-text import graph, but remains an installed dependency of the shared core.
+
+## Explain changes
+
+Available since `0.2.0`:
+
+```ts
+import { analyze, ruleDescriptions } from "@typehug/en";
+
+const result = analyze("Wait 30 min.");
+result.text; // "Wait 30\u00a0min."
+result.changes[0]?.rules.map((rule) => ruleDescriptions[rule]);
+```
+
+`result.text` equals `glue` with the same input and options. Each change records one replaced space with UTF-16 offsets into the original string, an exclusive `end`, and every active supporting rule family. The package exports the `AnalysisResult` and `TextChange` types. Analysis accepts plain text and reports accepted replacements only; an empty `changes` array does not assess typography or explain skipped candidates.
 
 All rule families are enabled by default. Use `rules` options to disable individual families. English short-word joins and short paragraph endings are aesthetic preferences.
 

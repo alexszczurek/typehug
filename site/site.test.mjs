@@ -207,5 +207,6 @@ test("Markdown exports match their sources and the release feed is linked", asyn
     && attribute(node, "href") === "./changelog/rss.xml"), "RSS discovery link");
   const feed = await readFile(path.join(directory, "changelog/rss.xml"), "utf8");
   assert.match(feed, /<rss\s+version="2\.0">/u);
+  assert.match(feed, /<item><title>Typehug 0\.2\.0<\/title><link>https:\/\/github\.com\/alexszczurek\/typehug\/releases\/tag\/v0\.2\.0<\/link>[\s\S]*<\/item>/u);
   assert.match(feed, /<item>[\s\S]*<link>https:\/\/github\.com\/alexszczurek\/typehug\/releases\/tag\/v0\.1\.0<\/link>[\s\S]*<\/item>/u);
 });

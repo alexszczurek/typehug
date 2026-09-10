@@ -1,6 +1,6 @@
 {
   "name": "@typehug/pl",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "type": "module",
   "description": "Polish typography helpers for text, HTML and rich text.",
   "license": "MIT",
@@ -43,6 +43,6 @@
     "access": "public"
   },
   "dependencies": {
-    "@typehug/core": "0.1.0"
+    "@typehug/core": "0.2.0"
   }
 }

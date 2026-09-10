@@ -94,7 +94,10 @@ for (const name of ["api.md", "rules.md"]) {
 await copyFile(path.join(root, "CHANGELOG.md"), path.join(output, "changelog.md"));
 await mkdir(path.join(output, "changelog"), { recursive: true });
 await writeFile(path.join(output, "changelog/rss.xml"), `<?xml version="1.0" encoding="UTF-8"?>
-<rss version="2.0"><channel><title>Typehug releases</title><link>https://github.com/alexszczurek/typehug/releases</link><description>Release notes for Typehug, typography helpers for Polish and English.</description><language>en</language><item><title>Typehug 0.1.0</title><link>https://github.com/alexszczurek/typehug/releases/tag/v0.1.0</link><guid>https://github.com/alexszczurek/typehug/releases/tag/v0.1.0</guid><pubDate>Wed, 09 Sep 2026 16:02:34 GMT</pubDate><description>The first public release. Polish and English profiles, plain text, HTML, and formatted runs with TypeScript declarations.</description></item></channel></rss>
+<rss version="2.0"><channel><title>Typehug releases</title><link>https://github.com/alexszczurek/typehug/releases</link><description>Release notes for Typehug, typography helpers for Polish and English.</description><language>en</language>
+<item><title>Typehug 0.2.0</title><link>https://github.com/alexszczurek/typehug/releases/tag/v0.2.0</link><guid>https://github.com/alexszczurek/typehug/releases/tag/v0.2.0</guid><pubDate>Thu, 10 Sep 2026 14:24:44 GMT</pubDate><description>Add plain-text analysis with source ranges and supporting rule families, exported result types and rule descriptions, and playground controls and change explanations. Correction behavior is unchanged.</description></item>
+<item><title>Typehug 0.1.0</title><link>https://github.com/alexszczurek/typehug/releases/tag/v0.1.0</link><guid>https://github.com/alexszczurek/typehug/releases/tag/v0.1.0</guid><pubDate>Wed, 09 Sep 2026 16:02:34 GMT</pubDate><description>The first public release. Polish and English profiles, plain text, HTML, and formatted runs with TypeScript declarations.</description></item>
+</channel></rss>
 `);
 const bytes = Object.values(result.metafile.outputs).reduce((sum, entry) => sum + entry.bytes, 0);
 console.log(`Built static site at site/dist (${(bytes / 1024).toFixed(1)} kB of JavaScript and CSS).`);
