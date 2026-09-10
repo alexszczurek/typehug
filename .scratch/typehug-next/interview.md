@@ -1,6 +1,6 @@
 # Typehug next version: interview notes
 
-Updated: 2026-09-10. The product scope below was confirmed through Q1–Q5 and implemented locally. The analysis API has not been released to npm, and the updated website has not been deployed.
+Updated: 2026-09-10. The product scope below was confirmed through Q1–Q5 and released as Typehug `0.2.0`. All four npm packages are published and the updated website is live at https://typehug.aliszu.com/.
 
 ## Agreed use case
 
@@ -80,3 +80,9 @@ No product-choice questions remain in the agreed first scope. Future findings th
 - A separate deterministic comparison against the engine at `8e301c1` covered 32,000 cases across EN/PL and all 32 rule selections. Corrected output stayed identical, edit records reconstructed that output, and repeat analysis reported no further edits.
 - Browser checks confirmed overlapping causes, keyboard toggles and focus, EN/PL selection, copied corrected text and reproducible examples, existing-space and group-limit handling, empty input, and all rules disabled. Layout checks passed at 320, 390, and 1024 pixels, with 44-pixel checkbox labels and no page overflow. No browser console errors were reported.
 - Independent Standards and Spec reviews against `8e301c1...HEAD` found no material issues. The Spec reviewer also checked 384 locale/input/settings combinations independently.
+
+## Release verification
+
+- Released `@typehug/core`, `@typehug/pl`, `@typehug/en`, and `@typehug/all` at `0.2.0`. Fresh consumers installed each package from the public registry and verified analysis results, correction parity, declarations, and matching dependency versions.
+- Commit `da9836c040cfa6083b470489ba4e88bef2d27a62` passed CI on Node.js 22 and 24 and was fast-forwarded to `main`. Tag `v0.2.0` and its [GitHub release](https://github.com/alexszczurek/typehug/releases/tag/v0.2.0) point to that release.
+- The validated Vercel deployment was promoted to https://typehug.aliszu.com/. Live browser checks confirmed the version link, overlapping explanations, rule controls, no-change state, and copying; no console errors were reported.
