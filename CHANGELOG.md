@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Add plain-text `analyze` to all package roots, returning corrected text and actual changes with UTF-16 source ranges and all active supporting rule families.
+- Export `AnalysisResult`, `TextChange`, and frozen `ruleDescriptions` for applications that present change explanations.
+- Add rule-family controls, change explanations, and a no-changes state to the playground. Keep its reproducible npm example on the published `glue` API while analysis remains unreleased.
+- Preserve existing correction behavior, group limits, and HTML and formatted-run entry points.
+
 ## 0.1.0 — 2026-09-09
 
 - Add Polish and English profiles with individually installable packages and a combined package.

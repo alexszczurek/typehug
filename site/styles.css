@@ -30,6 +30,7 @@
   body { background: var(--color-canvas); color: var(--color-ink); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; font-size: 15px; line-height: 1.6; letter-spacing: -.012em; -webkit-font-smoothing: antialiased; }
   ::selection { background: var(--color-join); color: var(--color-ink); }
   :focus-visible { outline: 2px solid var(--color-focus); outline-offset: 3px; }
+  [hidden] { display: none !important; }
   h1, h2, h3 { font-kerning: normal; text-wrap: balance; }
   h2 { font-size: 16px; font-weight: 600; line-height: 1.5; letter-spacing: -.015em; }
   h3 { font-size: 14px; font-weight: 550; line-height: 1.6; }
@@ -73,22 +74,38 @@
   .preview-label { font-size: 12px; line-height: 1.5; color: var(--color-muted); margin-bottom: 16px; }
   .preview-text { width: min(100%, var(--preview-width)); font-size: 18px; line-height: 1.6; letter-spacing: -.022em; white-space: pre-wrap; overflow-wrap: anywhere; }
   .joined, mark { background: var(--color-join); color: inherit; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
+  .added-space { background: var(--color-join); border-bottom: 2px solid var(--color-muted); border-radius: 1px; }
   .playground-controls { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 16px; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface); }
   .width-control { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--color-muted); }
   .width-control input { width: 100px; height: 44px; accent-color: var(--color-ink); cursor: ew-resize; }
   .width-control output { min-width: 47px; font-variant-numeric: tabular-nums; white-space: nowrap; }
   .join-count { font-size: 11px; color: var(--color-faint); text-align: right; }
-  .edit-demo { margin-top: -8px; }
-  .edit-demo summary { display: flex; align-items: center; justify-content: space-between; gap: 16px; min-height: 44px; color: var(--color-muted); font-size: 13px; cursor: pointer; list-style: none; }
-  .edit-demo summary::-webkit-details-marker { display: none; }
-  .edit-demo summary span { display: grid; place-items: center; width: 24px; height: 24px; font-size: 18px; color: var(--color-faint); }
-  .edit-demo[open] summary span { transform: rotate(45deg); }
   .edit-demo-content { display: flex; flex-direction: column; gap: 8px; padding: 8px 0 0; }
   .edit-demo-content label { font-size: 13px; font-weight: 500; }
-  .edit-demo textarea { display: block; width: 100%; min-height: 118px; max-height: 400px; resize: vertical; padding: 12px; border: 1px solid var(--color-border-control); border-radius: 7px; background: var(--color-canvas); color: var(--color-ink); font-size: 16px; line-height: 1.6; }
-  .edit-demo textarea:focus { border-color: var(--color-focus); }
+  .edit-demo-content textarea { display: block; width: 100%; min-height: 118px; max-height: 400px; resize: vertical; padding: 12px; border: 1px solid var(--color-border-control); border-radius: 7px; background: var(--color-canvas); color: var(--color-ink); font-size: 16px; line-height: 1.6; }
+  .edit-demo-content textarea:focus { border-color: var(--color-focus); }
   .edit-demo-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding-top: 4px; }
   .edit-demo-footer p { font-size: 12px; color: var(--color-muted); }
+  .input-note { color: var(--color-muted); font-size: 12px; line-height: 1.6; }
+  .rule-settings { min-width: 0; margin: 0; padding: 0; border: 0; }
+  .rule-settings legend { padding: 0; font-size: 13px; font-weight: 500; }
+  .rule-options { display: flex; flex-wrap: wrap; column-gap: 24px; margin: 2px 0 4px; }
+  .rule-options label { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; font-size: 13px; cursor: pointer; }
+  .rule-options input { width: 16px; height: 16px; margin: 0; accent-color: var(--color-ink); flex: none; }
+  .change-explanations { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+  .changes-heading { display: flex; align-items: baseline; justify-content: space-between; flex-wrap: wrap; gap: 8px 16px; }
+  .changes-heading > p { font-size: 12px; color: var(--color-muted); font-variant-numeric: tabular-nums; }
+  .change-list { margin: 0; padding-left: 24px; }
+  .change-item { padding: 16px 0; border-bottom: 1px solid var(--color-border-subtle); }
+  .change-item::marker { color: var(--color-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .change-context { font-family: "SFMono-Regular", Consolas, monospace; font-size: 13px; line-height: 1.8; white-space: pre-wrap; overflow-wrap: anywhere; }
+  .change-reasons { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 12px; line-height: 1.6; color: var(--color-muted); }
+  .change-reasons strong { font-weight: 550; color: var(--color-ink); }
+  .empty-state { padding: 16px 0; font-size: 13px; color: var(--color-muted); }
+  .playground-example { margin-top: 8px; min-width: 0; }
+  .playground-example summary { min-height: 44px; padding: 10px 0; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .playground-example-content { display: flex; flex-direction: column; gap: 12px; padding-top: 4px; }
+  .playground-example pre { max-height: 340px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .no-script { padding-top: 8px; color: var(--color-muted); font-size: 13px; }
   .install-section { gap: 16px; }
   .install-command { display: flex; align-items: center; gap: 12px; padding: 4px 8px 4px 16px; min-height: 54px; background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 7px; }
@@ -131,9 +148,9 @@
   @media (hover: hover) {
     .button-primary:hover { background: color-mix(in oklch, var(--color-ink) 90%, var(--color-canvas)); }
     .button-secondary:hover, .segmented button:hover, .copy-button:hover { background: color-mix(in oklch, var(--color-surface) 97%, var(--color-ink)); color: var(--color-ink); }
-    .documentation-link:hover, .text-link:hover, .site-footer a:hover, .footer-link:hover, .edit-demo summary:hover { color: var(--color-ink); }
+    .documentation-link:hover, .text-link:hover, .site-footer a:hover, .footer-link:hover, .playground-example summary:hover { color: var(--color-ink); }
     .site-footer a:hover, .footer-link:hover { text-decoration: underline; text-underline-offset: 3px; }
-    .edit-demo textarea:hover { border-color: color-mix(in oklch, var(--color-ink) 30%, var(--color-canvas)); }
+    .edit-demo-content textarea:hover { border-color: color-mix(in oklch, var(--color-ink) 30%, var(--color-canvas)); }
   }
 }
 

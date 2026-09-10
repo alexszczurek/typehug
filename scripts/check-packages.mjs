@@ -44,13 +44,33 @@ try {
     const options = locale === "all" ? ', { locale: "pl", rules: { lastWords: false } }' : ', { rules: { lastWords: false } }';
     const text = locale === "en" ? "I see a cat." : "Idę w domu.";
     const expected = locale === "en" ? "I\u00a0see a\u00a0cat." : "Idę w\u00a0domu.";
+    const analysisOptions = locale === "all" ? ', { locale: "en" }' : "";
     const program = `
       import assert from "node:assert/strict";
-      import { glue, glueRuns } from "@typehug/${locale}";
+      import { analyze, glue, glueRuns, ruleDescriptions } from "@typehug/${locale}";
+      import { analyze as coreAnalyze, ruleDescriptions as coreDescriptions } from "@typehug/core";
       import { glueHtml } from "@typehug/${locale}/html";
       assert.equal(glue(${JSON.stringify(text)}${options}), ${JSON.stringify(expected)});
       assert.equal(glueRuns([{ text: ${JSON.stringify(text)}, bold: true }]${options})[0].bold, true);
       assert.match(glueHtml(${JSON.stringify(`<p>${text}</p>`)}${options}), /(?:&nbsp;|\u00a0)/u);
+      assert.deepEqual(analyze("Wait 30 min."${analysisOptions}), {
+        text: "Wait 30\u00a0min.",
+        changes: [{ start: 7, end: 8, before: " ", after: "\u00a0", rules: ["units", "lastWords"] }],
+      });
+      assert.deepEqual(coreAnalyze("Wait 30 min.", {
+        locale: "custom", shortWords: [], units: ["min"], abbreviations: [],
+      }, { rules: { lastWords: false } }), {
+        text: "Wait 30\u00a0min.",
+        changes: [{ start: 7, end: 8, before: " ", after: "\u00a0", rules: ["units"] }],
+      });
+      for (const descriptions of [ruleDescriptions, coreDescriptions]) {
+        assert(Object.isFrozen(descriptions), "public rule descriptions must be frozen");
+        assert.deepEqual(Object.keys(descriptions).sort(), ["abbreviations", "initials", "lastWords", "shortWords", "units"]);
+        for (const description of Object.values(descriptions)) {
+          assert.equal(typeof description, "string");
+          assert(description.trim().length > 0, "every family needs a readable explanation");
+        }
+      }
     `;
     await writeFile(join(consumer, "smoke.mjs"), program);
     run(process.execPath, ["smoke.mjs"], consumer);
@@ -58,7 +78,7 @@ try {
     if (locale !== "all") {
       const installed = JSON.parse(run(npm, ["ls", "--all", "--json"], consumer));
       assert(!JSON.stringify(installed).includes(`@typehug/${locale === "pl" ? "en" : "pl"}`));
-      await writeFile(join(consumer, "entry.mjs"), `export { glue } from "@typehug/${locale}";`);
+      await writeFile(join(consumer, "entry.mjs"), `export { analyze, glue, ruleDescriptions } from "@typehug/${locale}";`);
       const bundle = await build({
         absWorkingDir: consumer,
         entryPoints: ["entry.mjs"],
@@ -82,7 +102,7 @@ try {
       const allManifest = JSON.parse(await readFile(join(consumer, "node_modules/@typehug/all/package.json"), "utf8"));
       const sourceManifest = JSON.parse(await readFile(join(root, "packages/all/package.json"), "utf8"));
       assert.equal(allManifest.version, sourceManifest.version);
-      console.log("@typehug/all: packed text, runs, HTML and TypeScript imports passed");
+      console.log("@typehug/all: packed analysis, text, runs, HTML and TypeScript imports passed");
     }
   }
 } finally {

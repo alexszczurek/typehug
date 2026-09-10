@@ -68,7 +68,7 @@ The combined package requires an explicit locale. There is no automatic language
 - `units`: numbers with recognized unit symbols, such as `30 min`.
 - `initials`: consecutive uppercase initials with periods.
 - `abbreviations`: listed abbreviations and references with suitable following text, such as `Fig. 2`.
-- `lastWords`: joins the final two words of a paragraph with at least three words when the pair is no longer than 24 characters. Created nonbreaking groups are capped at 48 characters.
+- `lastWords`: joins the final two words of a paragraph with at least three words when the pair is no longer than 24 Unicode code points. Created nonbreaking groups are capped at 48 code points. These limits do not measure line width.
 
 All families are enabled by default. Disable any family through `rules`, for example `{ rules: { lastWords: false } }`.
 
@@ -76,7 +76,11 @@ English short-word joins and paragraph endings are editorial preferences. Typehu
 
 ## Playground
 
-The landing page compares the original and corrected text using the real Typehug engine. Change the language, edit the sample, and adjust the column width to see the joins. Text stays in the browser. Highlights show joined words and are not part of the copied output.
+The landing page compares original and corrected text using Typehug's plain-text analysis API. Choose English or Polish, paste text, switch rule families on or off, and inspect the reasons for each change. All families begin enabled. A change can have several supporting families; switching off one may leave the change in place. Adjust the column width to see how the result wraps.
+
+The preview explains actual changes. A no-changes result means the selected rules made no edits; it does not assess every aspect of typography or list skipped cases. Text stays in the browser. Highlights and explanations are not part of the copied corrected text.
+
+Copy the corrected text or the npm example. The example uses the published `glue` API with the selected locale and rule settings. The playground's `analyze` API, result types, and rule descriptions are unreleased and are not included in npm `0.1.0` yet. See the [development API reference](./docs/api.md#change-analysis-unreleased).
 
 ## Links
 

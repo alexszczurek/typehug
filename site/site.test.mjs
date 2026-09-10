@@ -5,7 +5,7 @@ import { test } from "node:test";
 import { fileURLToPath } from "node:url";
 import { runInNewContext } from "node:vm";
 import { parse, parseFragment } from "parse5";
-import { glue } from "@typehug/all";
+import { analyze, glue, ruleDescriptions } from "@typehug/all";
 import { glue as glueEnglish, glueRuns } from "@typehug/en";
 import { glueHtml } from "@typehug/en/html";
 
@@ -104,11 +104,44 @@ test("copy buttons resolve to unique, nonempty snippets", () => {
     assert.ok(text(byId(attribute(button, "data-copy-target"))).trim(), "Copy targets have text");
   }
   const snippets = nodes.filter((node) => node.tagName === "code" && node.parentNode?.tagName === "pre");
-  assert.equal(snippets.length, 3);
+  assert.equal(snippets.length, 4);
   for (const snippet of snippets) {
     const id = attribute(snippet, "id");
     assert.ok(id, "Every code block has an addressable copy target");
     one(buttons.filter((button) => attribute(button, "data-copy-target") === id), `copy button for ${id}`);
+  }
+});
+
+test("the playground exposes checked native family controls and explains only actual edits", () => {
+  const expectedNames = ["shortWords", "units", "initials", "abbreviations", "lastWords"];
+  const controls = nodes.filter((node) => attribute(node, "data-rule") !== undefined);
+  assert.deepEqual(controls.map((control) => attribute(control, "data-rule")), expectedNames);
+  for (const control of controls) {
+    assert.equal(control.tagName, "input");
+    assert.equal(attribute(control, "type"), "checkbox");
+    assert.notEqual(attribute(control, "checked"), undefined);
+    const label = one(nodes.filter((node) => node.tagName === "label"
+      && attribute(node, "for") === attribute(control, "id")), "associated rule label");
+    assert.ok(text(label).trim());
+  }
+  assert.notEqual(attribute(byId("changes-empty"), "hidden"), undefined);
+  assert.equal(attribute(byId("join-count"), "aria-live"), "polite");
+  assert.equal(attribute(byId("change-list"), "aria-live"), undefined,
+    "Detailed explanations are available without announcing the whole list on each edit");
+
+  const analysis = analyze(examples.en, { locale: "en" });
+  const added = [...descendants(byId("after-text"))].filter((node) => hasClass(node, "added-space"));
+  assert.equal(added.length, analysis.changes.length);
+  assert.ok(added.every((node) => text(node) === "\u00a0"));
+  const rows = byId("change-list").childNodes.filter((node) => node.tagName === "li");
+  assert.equal(rows.length, analysis.changes.length);
+  for (const [index, row] of rows.entries()) {
+    const reasons = one([...descendants(row)].filter((node) => hasClass(node, "change-reasons")), "change reasons");
+    const items = reasons.childNodes.filter((node) => node.tagName === "li");
+    assert.equal(items.length, analysis.changes[index].rules.length);
+    for (const [ruleIndex, rule] of analysis.changes[index].rules.entries()) {
+      assert.ok(text(items[ruleIndex]).endsWith(ruleDescriptions[rule]));
+    }
   }
 });
 

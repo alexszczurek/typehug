@@ -47,6 +47,31 @@ glue("I have a question.", { locale: "en" });
 
 There is no language detection. A missing or unsupported locale in `@typehug/all` throws a `RangeError`.
 
+## Change explanations, unreleased
+
+The development checkout adds `analyze`, its result types, and `ruleDescriptions`. These exports are not available in the published `0.1.0` packages yet. Use the existing `glue` examples above with that release.
+
+```ts
+import { analyze, ruleDescriptions } from "@typehug/en";
+
+const result = analyze("Wait 30 min.");
+// {
+//   text: "Wait 30\u00a0min.",
+//   changes: [{
+//     start: 7, end: 8, before: " ", after: "\u00a0",
+//     rules: ["units", "lastWords"],
+//   }],
+// }
+
+for (const change of result.changes) {
+  console.log(change.rules.map((rule) => ruleDescriptions[rule]));
+}
+```
+
+`result.text` equals `glue` with the same input and options. Each change identifies one replaced space using UTF-16 offsets into the original string, with an exclusive `end`, and lists every active supporting rule family. In this example, disabling only `units` still permits `lastWords` to make the change; disable both to leave the space unchanged.
+
+Analysis accepts plain text. An empty `changes` array means these rules made no changes; it does not certify the text's typography or explain skipped candidates. Existing nonbreaking spaces and rejected joins are not reported as new changes. See the [analysis schema, offsets, and package signatures](docs/api.md#change-analysis-unreleased).
+
 ## HTML
 
 ```ts

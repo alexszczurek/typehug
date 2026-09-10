@@ -88,3 +88,13 @@ URL-like and email tokens are protected, including bare domain-like names such a
 The 48-code-point limit includes punctuation, spacing, and caller-supplied nonbreaking groups. Existing oversized groups are preserved but not extended. Candidate joins are applied from left to right. The engine does not undo previous joins when an option is disabled later.
 
 Rules may target the same space. Disabling one family only disables its own candidates. With the same profile and options, processing an already processed string does not make further changes.
+
+## Change explanations, unreleased
+
+The development checkout's `analyze` API reports actual accepted space replacements without changing these rules. It is not yet part of the published `0.1.0` packages. Each change lists all active supporting families in the order `shortWords`, `units`, `initials`, `abbreviations`, `lastWords`.
+
+For `Wait 30 min.`, the space between `30` and `min.` is supported by both `units` and `lastWords`. Disabling either one leaves the other explanation and the same correction. Disabling both leaves that space unchanged. An explanation describes the selected editorial policy; it does not establish that the original text was incorrect.
+
+Existing nonbreaking spaces, protected text, and candidates rejected by the group limit do not appear as newly performed edits. For example, `A particularly\u00a0interesting\u00a0typographic\u00a0experiment.` stays unchanged because adding `A` would extend the existing 48-code-point group beyond the limit. No changes means no accepted edits under the selected rules, rather than a complete typography audit.
+
+The result includes corrected text and UTF-16 source ranges for replaced spaces. The offsets are separate from the code-point limits described above. Frozen `ruleDescriptions` exports provide readable English descriptions for consumers. See the [public analysis schema](api.md#change-analysis-unreleased).

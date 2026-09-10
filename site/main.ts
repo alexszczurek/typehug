@@ -1,5 +1,6 @@
-import { glue, glueRuns, type Locale } from "@typehug/all";
+import { analyze, glue, glueRuns, ruleDescriptions, type Locale, type RuleName } from "@typehug/all";
 import examples from "./examples.json";
+import { createInstallCommand, createSnippet, defaultRules, explanationContext, previewSegments, ruleLabels, ruleNames } from "./playground";
 
 function element<T extends HTMLElement>(
   id: string,
@@ -24,6 +25,13 @@ const widthValue = element("width-value", HTMLOutputElement);
 const joinCount = element("join-count", HTMLElement);
 const copyResult = element("copy-result", HTMLButtonElement);
 const copyStatus = element("copy-status", HTMLElement);
+const changeList = element("change-list", HTMLOListElement);
+const changesEmpty = element("changes-empty", HTMLParagraphElement);
+const changesIntro = element("changes-intro", HTMLParagraphElement);
+const changeSummary = element("change-summary", HTMLParagraphElement);
+const playgroundCode = element("playground-code", HTMLElement);
+const playgroundInstall = element("playground-install", HTMLElement);
+const ruleInputs = ruleNames.map((name) => ({ name, input: element(`rule-${name}`, HTMLInputElement) }));
 const installCommand = element("install-command", HTMLElement);
 const packageDescription = element("package-description", HTMLElement);
 const usageCaveat = element("usage-caveat", HTMLElement);
@@ -48,40 +56,78 @@ const drafts: Record<Locale, string> = {
   en: sourceText.value || examples.en,
 };
 
-function renderJoinedText(text: string): void {
+function selectedRules(): Record<RuleName, boolean> {
+  const rules = { ...defaultRules };
+  for (const { name, input } of ruleInputs) rules[name] = input.checked;
+  return rules;
+}
+
+function addedSpace(text: string): HTMLElement {
+  const mark = document.createElement("mark");
+  mark.className = "added-space";
+  mark.setAttribute("aria-label", "Nonbreaking space added");
+  mark.textContent = text;
+  return mark;
+}
+
+function renderPreview(analysis: ReturnType<typeof analyze>): void {
   const fragment = document.createDocumentFragment();
-  let offset = 0;
-
-  for (const match of text.matchAll(/[^\s]+(?:\u00a0[^\s]+)+/gu)) {
-    fragment.append(document.createTextNode(text.slice(offset, match.index)));
-    const joined = document.createElement("span");
-    joined.className = "joined";
-    joined.textContent = match[0];
-    fragment.append(joined);
-    offset = match.index + match[0].length;
+  for (const segment of previewSegments(analysis)) {
+    fragment.append(segment.added ? addedSpace(segment.text) : document.createTextNode(segment.text));
   }
-
-  fragment.append(document.createTextNode(text.slice(offset)));
   afterText.replaceChildren(fragment);
+}
+
+function renderChanges(source: string, analysis: ReturnType<typeof analyze>, rules: Record<RuleName, boolean>): void {
+  const fragment = document.createDocumentFragment();
+  for (const change of analysis.changes) {
+    const row = document.createElement("li");
+    row.className = "change-item";
+    const context = document.createElement("p");
+    context.className = "change-context";
+    context.lang = locale;
+    const { before, after } = explanationContext(source, change);
+    context.append(document.createTextNode(before), addedSpace(change.after), document.createTextNode(after));
+    const reasons = document.createElement("ul");
+    reasons.className = "change-reasons";
+    for (const name of change.rules) {
+      const reason = document.createElement("li");
+      const label = document.createElement("strong");
+      label.textContent = ruleLabels[name];
+      reason.append(label, document.createTextNode(` ${ruleDescriptions[name]}`));
+      reasons.append(reason);
+    }
+    row.append(context, reasons);
+    fragment.append(row);
+  }
+  changeList.replaceChildren(fragment);
+  changeList.hidden = analysis.changes.length === 0;
+  changesIntro.hidden = analysis.changes.length === 0;
+  changesEmpty.hidden = analysis.changes.length > 0;
+  changesEmpty.textContent = source.length === 0
+    ? "Add some text to see the changes Typehug would make."
+    : !Object.values(rules).some(Boolean)
+      ? "All rule families are off. Your text is unchanged."
+      : "No changes for this text with the selected rules.";
+  changeSummary.textContent = `${analysis.changes.length} ${analysis.changes.length === 1 ? "space" : "spaces"} changed.`;
 }
 
 function render(announcementDelay = 0): void {
   const source = sourceText.value;
   drafts[locale] = source;
-  result = glue(source, { locale });
+  const rules = selectedRules();
+  const analysis = analyze(source, { locale, rules });
+  result = analysis.text;
   beforeText.textContent = source;
-  renderJoinedText(result);
-
-  let replacements = 0;
-  for (let index = 0; index < source.length; index += 1) {
-    if (source[index] === " " && result[index] === "\u00a0") {
-      replacements += 1;
-    }
-  }
+  renderPreview(analysis);
+  renderChanges(source, analysis, rules);
+  playgroundCode.textContent = createSnippet(source, locale, rules);
+  playgroundInstall.textContent = createInstallCommand(locale);
 
   window.clearTimeout(countAnnouncement);
   const announce = () => {
-    joinCount.textContent = `${replacements} nonbreaking ${replacements === 1 ? "space" : "spaces"} added`;
+    const count = analysis.changes.length;
+    joinCount.textContent = `${count} nonbreaking ${count === 1 ? "space" : "spaces"} added`;
   };
   if (announcementDelay > 0) {
     countAnnouncement = window.setTimeout(announce, announcementDelay);
@@ -111,6 +157,7 @@ for (const button of localeButtons) {
 }
 
 sourceText.addEventListener("input", () => render(400));
+for (const { input } of ruleInputs) input.addEventListener("change", () => render());
 
 let desiredWidth = Number.isFinite(previewWidth.valueAsNumber)
   ? previewWidth.valueAsNumber

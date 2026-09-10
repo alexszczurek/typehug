@@ -1,6 +1,21 @@
 /** Rule families are all enabled unless explicitly set to false. */
 export type RuleName = "shortWords" | "units" | "initials" | "abbreviations" | "lastWords";
 
+/** One accepted replacement at the original UTF-16 range [start, end). */
+export interface TextChange {
+  start: number;
+  end: number;
+  before: " ";
+  after: "\u00a0";
+  /** All active supporting families, ordered shortWords, units, initials, abbreviations, lastWords. */
+  rules: RuleName[];
+}
+
+export interface AnalysisResult {
+  text: string;
+  changes: TextChange[];
+}
+
 export interface GlueOptions {
   rules?: Partial<Record<RuleName, boolean>>;
 }

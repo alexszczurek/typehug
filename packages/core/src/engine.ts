@@ -1,4 +1,4 @@
-import type { Abbreviation, GlueOptions, LanguageProfile } from "./types.js";
+import type { Abbreviation, AnalysisResult, GlueOptions, LanguageProfile, RuleName, TextChange } from "./types.js";
 
 const NBSP = "\u00a0";
 const MAX_GROUP_LENGTH = 48;
@@ -59,6 +59,10 @@ function matchesFollowing(text: string, kind: Abbreviation["followedBy"]): boole
  * call sees the same candidates and can never unlock a previously rejected join.
  */
 export function glue(text: string, profile: LanguageProfile, options: GlueOptions = {}): string {
+  return analyze(text, profile, options).text;
+}
+
+export function analyze(text: string, profile: LanguageProfile, options: GlueOptions = {}): AnalysisResult {
   const shortWords = new Set(profile.shortWords);
   const units = new Set(profile.units);
   const abbreviations = new Map(profile.abbreviations.map((entry) => [entry.text, entry.followedBy]));
@@ -73,7 +77,7 @@ export function glue(text: string, profile: LanguageProfile, options: GlueOption
       protected: !abbreviations.has(withoutOpening(value)) && isProtected(value),
     });
   }
-  if (tokens.length < 2) return text;
+  if (tokens.length < 2) return { text, changes: [] };
 
   const gaps = tokens.slice(1).map((token, index) => text.slice(tokens[index]!.end, token.start));
   const enabled = (rule: keyof NonNullable<GlueOptions["rules"]>) => options.rules?.[rule] !== false;
@@ -95,20 +99,21 @@ export function glue(text: string, profile: LanguageProfile, options: GlueOption
     return isAbbreviationPair(left, right) || isInitialPair(left, right);
   };
 
-  const candidates = new Set<number>();
+  const candidates = new Map<number, RuleName[]>();
+  const addCandidate = (index: number, rule: RuleName): void => {
+    const rules = candidates.get(index);
+    if (rules) rules.push(rule);
+    else candidates.set(index, [rule]);
+  };
   for (let index = 0; index < gaps.length; index++) {
     if (!canJoin(index)) continue;
     const left = tokens[index]!;
     const right = tokens[index + 1]!;
     const leftBare = withoutOpening(left.text);
-    if (
-      (enabled("shortWords") && shortWords.has(leftBare) && isWord(right.text)) ||
-      (enabled("units") && NUMBER.test(leftBare) && units.has(withoutPunctuation(right.text))) ||
-      (enabled("initials") && isInitialPair(left, right)) ||
-      (enabled("abbreviations") && isAbbreviationPair(left, right))
-    ) {
-      candidates.add(index);
-    }
+    if (enabled("shortWords") && shortWords.has(leftBare) && isWord(right.text)) addCandidate(index, "shortWords");
+    if (enabled("units") && NUMBER.test(leftBare) && units.has(withoutPunctuation(right.text))) addCandidate(index, "units");
+    if (enabled("initials") && isInitialPair(left, right)) addCandidate(index, "initials");
+    if (enabled("abbreviations") && isAbbreviationPair(left, right)) addCandidate(index, "abbreviations");
   }
 
   if (enabled("lastWords")) {
@@ -127,7 +132,7 @@ export function glue(text: string, profile: LanguageProfile, options: GlueOption
         left.length + 1 + right.length <= MAX_ENDING_LENGTH &&
         canJoin(end - 2)
       ) {
-        candidates.add(end - 2);
+        addCandidate(end - 2, "lastWords");
       }
     };
 
@@ -173,17 +178,21 @@ export function glue(text: string, profile: LanguageProfile, options: GlueOption
     if (NONBREAKING_GAP.test(gaps[index]!)) unite(index, codePoints(gaps[index]!), false);
   }
 
-  const replacements: number[] = [];
+  const changes: TextChange[] = [];
   for (let index = 0; index < gaps.length; index++) {
-    if (candidates.has(index) && unite(index, 1, true)) replacements.push(tokens[index]!.end);
+    const rules = candidates.get(index);
+    if (rules && unite(index, 1, true)) {
+      const start = tokens[index]!.end;
+      changes.push({ start, end: start + 1, before: " ", after: NBSP, rules });
+    }
   }
-  if (replacements.length === 0) return text;
+  if (changes.length === 0) return { text, changes };
 
   let result = "";
   let cursor = 0;
-  for (const position of replacements) {
-    result += text.slice(cursor, position) + NBSP;
-    cursor = position + 1;
+  for (const change of changes) {
+    result += text.slice(cursor, change.start) + change.after;
+    cursor = change.end;
   }
-  return result + text.slice(cursor);
+  return { text: result + text.slice(cursor), changes };
 }

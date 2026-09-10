@@ -22,7 +22,7 @@
     "example": "npm run build && node examples/basic.mjs",
     "site:build": "npm run build && node scripts/build-site.mjs",
     "site:dev": "npm run site:build && node scripts/serve-site.mjs",
-    "site:check": "npm run site:build && tsc --noEmit -p site/tsconfig.json && node --test site/site.test.mjs"
+    "site:check": "npm run site:build && tsc --noEmit -p site/tsconfig.json && node --test site/*.test.mjs"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

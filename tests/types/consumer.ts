@@ -1,14 +1,38 @@
-import { glue, glueRuns, profile, type GluedRun, type GlueOptions } from "@typehug/pl";
-import { glue as english, glueRuns as englishRuns, type GluedRun as EnglishGluedRun } from "@typehug/en";
-import { glue as anyLanguage, glueRuns as anyRuns, type GluedRun as CombinedGluedRun } from "@typehug/all";
+import { analyze, glue, glueRuns, profile, ruleDescriptions, type AnalysisResult, type TextChange, type RuleName, type GluedRun, type GlueOptions } from "@typehug/pl";
+import { analyze as englishAnalyze, glue as english, glueRuns as englishRuns, ruleDescriptions as englishDescriptions, type AnalysisResult as EnglishAnalysisResult, type TextChange as EnglishTextChange, type GluedRun as EnglishGluedRun } from "@typehug/en";
+import { analyze as anyAnalysis, glue as anyLanguage, glueRuns as anyRuns, ruleDescriptions as combinedDescriptions, type AnalysisResult as CombinedAnalysisResult, type TextChange as CombinedTextChange, type GluedRun as CombinedGluedRun } from "@typehug/all";
 import { glueHtml } from "@typehug/pl/html";
 import { glueHtml as englishHtml } from "@typehug/en/html";
 import { glueHtml as anyHtml } from "@typehug/all/html";
-import { glue as core, glueRuns as coreRuns, type GluedRun as CoreGluedRun } from "@typehug/core";
+import { analyze as coreAnalysis, glue as core, glueRuns as coreRuns, ruleDescriptions as coreDescriptions, type AnalysisResult as CoreAnalysisResult, type TextChange as CoreTextChange, type GluedRun as CoreGluedRun } from "@typehug/core";
 import { glueHtml as coreHtml } from "@typehug/core/html";
 
 const options: GlueOptions = { rules: { lastWords: false } };
 const text: string = glue("Idę w dobrym kierunku.", options);
+const analysis: AnalysisResult = analyze("Idę w dobrym kierunku.", options);
+const analyzedText: string = analysis.text;
+void analyzedText;
+const englishAnalysis: EnglishAnalysisResult = englishAnalyze("Wait 30 min.", options);
+const combinedAnalysis: CombinedAnalysisResult = anyAnalysis("Wait 30 min.", { locale: "en", ...options });
+const customAnalysis: CoreAnalysisResult = coreAnalysis(text, profile, options);
+const exportedChanges: [TextChange, EnglishTextChange, CombinedTextChange, CoreTextChange] = [
+  analysis.changes[0]!, englishAnalysis.changes[0]!, combinedAnalysis.changes[0]!, customAnalysis.changes[0]!,
+];
+for (const change of exportedChanges) {
+  const start: number = change.start;
+  const end: number = change.end;
+  const before: " " = change.before;
+  const after: "\u00a0" = change.after;
+  const supportingRules: RuleName[] = change.rules;
+  const explanation: string = ruleDescriptions[supportingRules[0]!];
+  void [start, end, before, after, explanation];
+}
+for (const descriptions of [ruleDescriptions, englishDescriptions, combinedDescriptions, coreDescriptions]) {
+  const completeDescriptions: Readonly<Record<RuleName, string>> = descriptions;
+  // @ts-expect-error public rule descriptions cannot be reassigned
+  descriptions.units = "Replacement description";
+  void completeDescriptions;
+}
 english(text);
 glueHtml("<p>Idę w dobrym kierunku.</p>");
 englishHtml("<p>I see a cat.</p>");
@@ -100,3 +124,17 @@ glue(text, { locale: "en" });
 glue(text, { rules: { grammar: true } });
 // @ts-expect-error every run must have text
 glueRuns([{ bold: true }]);
+// @ts-expect-error analysis in all requires an explicit locale
+anyAnalysis(text);
+// @ts-expect-error an options object without a locale is insufficient
+anyAnalysis(text, {});
+// @ts-expect-error analysis only accepts shipped locales
+anyAnalysis(text, { locale: "fr" });
+// @ts-expect-error core analysis requires a profile
+coreAnalysis(text);
+// @ts-expect-error single-language analysis has no locale setting
+analyze(text, { locale: "en" });
+// @ts-expect-error analysis rule names are checked
+englishAnalyze(text, { rules: { grammar: true } });
+// @ts-expect-error analysis accepts plain text, not formatted runs
+englishAnalyze([{ text }]);

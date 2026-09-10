@@ -40,14 +40,30 @@
         </section>
 
         <section id="playground" class="playground section" aria-labelledby="playground-title">
-          <div class="section-heading"><h2 id="playground-title">Playground</h2><p>Change the width to see which words stay together.</p></div>
+          <div class="section-heading"><h2 id="playground-title">Playground</h2><p>Paste your text, choose the rules, and see what changes.</p></div>
           <div class="playground-toolbar">
             <div class="segmented" role="group" aria-label="Playground language">
               <button type="button" data-locale="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
-              <button type="button" data-locale="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polski</button>
+              <button type="button" data-locale="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polish</button>
             </div>
-            <span class="demo-hint">Joins are highlighted</span>
+            <span class="demo-hint">Added spaces are highlighted</span>
           </div>
+          <div class="edit-demo-content">
+            <label for="source-text">Your text</label>
+            <textarea id="source-text" rows="4" maxlength="12000" lang="en" spellcheck="false" aria-describedby="text-privacy">{{DEMO_SOURCE}}</textarea>
+            <p id="text-privacy" class="input-note">Plain text, processed in your browser.</p>
+          </div>
+          <fieldset class="rule-settings" aria-describedby="rule-overlap-note">
+            <legend>Rule families</legend>
+            <div class="rule-options">
+              <label for="rule-shortWords"><input id="rule-shortWords" type="checkbox" data-rule="shortWords" checked>Short words</label>
+              <label for="rule-units"><input id="rule-units" type="checkbox" data-rule="units" checked>Numbers and units</label>
+              <label for="rule-initials"><input id="rule-initials" type="checkbox" data-rule="initials" checked>Initials</label>
+              <label for="rule-abbreviations"><input id="rule-abbreviations" type="checkbox" data-rule="abbreviations" checked>References</label>
+              <label for="rule-lastWords"><input id="rule-lastWords" type="checkbox" data-rule="lastWords" checked>Paragraph endings</label>
+            </div>
+            <p id="rule-overlap-note" class="input-note">A space can be supported by more than one rule family.</p>
+          </fieldset>
           <div class="demo-frame">
             <div class="comparison">
               <div class="preview-panel" id="before-panel">
@@ -61,15 +77,25 @@
             </div>
             <div class="playground-controls">
               <div class="width-control"><label for="preview-width">Width</label><input id="preview-width" type="range" min="180" max="420" value="260" step="1"><output id="width-value" for="preview-width">260 px</output></div>
-              <p id="join-count" class="join-count" role="status" aria-live="polite">{{DEMO_COUNT}} nonbreaking spaces added</p>
+              <p id="join-count" class="join-count" role="status" aria-live="polite" aria-atomic="true">{{DEMO_COUNT}} nonbreaking spaces added</p>
             </div>
           </div>
-          <details class="edit-demo">
-            <summary>Try your own text <span aria-hidden="true">+</span></summary>
-            <div class="edit-demo-content">
-              <label for="source-text">Your text</label>
-              <textarea id="source-text" rows="4" maxlength="12000" lang="en" spellcheck="false">{{DEMO_SOURCE}}</textarea>
-              <div class="edit-demo-footer"><p>Processed in your browser. Only the text is copied.</p><button class="button button-secondary" id="copy-result" type="button">Copy result</button></div>
+          <div class="edit-demo-footer"><p>Only the text is copied, including its nonbreaking spaces.</p><button class="button button-secondary" id="copy-result" type="button">Copy result</button></div>
+          <section class="change-explanations" aria-labelledby="changes-title">
+            <div class="changes-heading"><h3 id="changes-title">What changed</h3><p id="change-summary">{{DEMO_COUNT}} spaces changed.</p></div>
+            <p id="changes-intro" class="input-note">Each highlighted space became a nonbreaking space. The reasons below explain each edit.</p>
+            <p id="changes-empty" class="empty-state" hidden>No changes for this text with the selected rules.</p>
+            <ol id="change-list" class="change-list">{{DEMO_CHANGES}}</ol>
+          </section>
+          <details class="playground-example" open>
+            <summary>Use these settings in your app</summary>
+            <div class="playground-example-content">
+              <p class="input-note">This example follows your text, language, and rule selection.</p>
+              <div class="install-command"><code id="playground-install">{{DEMO_INSTALL}}</code><button class="copy-button" type="button" data-copy-target="playground-install" aria-label="Copy playground installation command">Copy</button></div>
+              <article class="usage-card">
+                <div class="usage-card-heading"><h3>Your example</h3><button class="copy-button" type="button" data-copy-target="playground-code" aria-label="Copy your playground example">Copy example</button></div>
+                <pre><code id="playground-code">{{DEMO_SNIPPET}}</code></pre>
+              </article>
             </div>
           </details>
           <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to change the language, width, or sample text.</p></noscript>

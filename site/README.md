@@ -1,6 +1,10 @@
 # Typehug landing page
 
-This is a static English landing page with a Polish and English playground. A narrow, neutral layout puts the demo, installation, and API examples in one column. The browser demo imports the real `@typehug/all` engine. All page content and the initial corrected example are present in the built HTML.
+This is a static English landing page with an English and Polish playground, initially set to English. A narrow, neutral layout puts the demo, installation, and API examples in one column. The browser demo uses the workspace's public `analyze` and `ruleDescriptions` exports from `@typehug/all`. All page content and the initial corrected example are present in the built HTML.
+
+Analysis is unreleased; published npm packages remain at `0.1.0`. The copyable npm example therefore uses the existing `glue` API with the selected locale and rule-family settings. It reproduces the corrected text without requiring the unreleased explanation API.
+
+The playground explains actual replacements and their supporting rule families. It does not list skipped candidates or certify unchanged text. All five families begin enabled; when families overlap, disabling one can leave an edit supported by another. Change explanations remain visible without hover, and copy actions exclude the preview annotations.
 
 ```sh
 npm run site:dev
@@ -12,7 +16,7 @@ Open `http://127.0.0.1:4173`. This command builds the packages and site, then se
 npm run site:check
 ```
 
-This builds the site, checks its TypeScript, and verifies the static demo, copy targets, links, and exported Markdown.
+This builds the site, checks its TypeScript, and verifies the static demo, rule controls, explanations, copy targets, links, and exported Markdown. Browser checks should also cover keyboard operation, narrow layouts, and announcements while editing.
 
 ## Hosting
 

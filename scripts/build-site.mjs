@@ -2,7 +2,7 @@ import { build } from "esbuild";
 import { copyFile, mkdir, readFile, rm, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import path from "node:path";
-import { glue } from "@typehug/all";
+import { analyze, ruleDescriptions } from "@typehug/all";
 
 const root = fileURLToPath(new URL("../", import.meta.url));
 const source = path.join(root, "site");
@@ -35,9 +35,30 @@ function asset(entryPoint) {
   return `./${path.relative(output, path.resolve(root, entry[0])).split(path.sep).join("/")}`;
 }
 
+// Share preview context and snippet generation with the browser. This temporary
+// bundle is evaluated only during the build and is not a published site asset.
+const presentation = await build({
+  absWorkingDir: root,
+  entryPoints: ["site/playground.ts"],
+  bundle: true,
+  write: false,
+  format: "esm",
+  platform: "node",
+  target: "es2022",
+});
+const { createSnippet, createInstallCommand, defaultRules, previewSegments, explanationContext, ruleLabels } =
+  await import(`data:text/javascript;base64,${Buffer.from(presentation.outputFiles[0].contents).toString("base64")}`);
 const samples = JSON.parse(await read("examples.json"));
-const transformed = glue(samples.en, { locale: "en" });
-const marked = escape(transformed).replace(/[^\s]+(?:\u00a0[^\s]+)+/gu, '<span class="joined">$&</span>');
+const analysis = analyze(samples.en, { locale: "en" });
+const marked = previewSegments(analysis).map(({ text, added }) => added
+  ? `<mark class="added-space" aria-label="Nonbreaking space added">${escape(text)}</mark>`
+  : escape(text)).join("");
+const explanations = analysis.changes.map((change) => {
+  const context = explanationContext(samples.en, change);
+  const reasons = change.rules.map((rule) =>
+    `<li><strong>${escape(ruleLabels[rule])}</strong> ${escape(ruleDescriptions[rule])}</li>`).join("");
+  return `<li class="change-item"><p class="change-context" lang="en">${escape(context.before)}<mark class="added-space" aria-label="Nonbreaking space added">\u00a0</mark>${escape(context.after)}</p><ul class="change-reasons">${reasons}</ul></li>`;
+}).join("");
 const siteUrl = new URL(process.env.TYPEHUG_SITE_URL || "https://typehug.aliszu.com/");
 if (!["http:", "https:"].includes(siteUrl.protocol)) throw new Error("TYPEHUG_SITE_URL must be an HTTP(S) URL.");
 if (!siteUrl.pathname.endsWith("/")) siteUrl.pathname += "/";
@@ -53,7 +74,10 @@ const replacements = {
   SCRIPT_URL: asset("site/main.ts"),
   DEMO_SOURCE: escape(samples.en),
   DEMO_OUTPUT: marked,
-  DEMO_COUNT: String(samples.en.split("").filter((character, index) => character === " " && transformed[index] === "\u00a0").length),
+  DEMO_COUNT: String(analysis.changes.length),
+  DEMO_CHANGES: explanations,
+  DEMO_SNIPPET: escape(createSnippet(samples.en, "en", defaultRules)),
+  DEMO_INSTALL: escape(createInstallCommand("en")),
 };
 const html = (await read("index.html")).replace(/\{\{([A-Z_]+)\}\}/gu, (_, key) => {
   if (!(key in replacements)) throw new Error(`Unknown template field ${key}`);
