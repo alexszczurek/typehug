@@ -78,4 +78,5 @@ No product-choice questions remain in the agreed first scope. Future findings th
 - Public engine, adapter, and package tests: 62 passing. Public types and isolated packed-package consumer checks pass.
 - Site type check and 11 presentation/build tests pass.
 - A separate deterministic comparison against the engine at `8e301c1` covered 32,000 cases across EN/PL and all 32 rule selections. Corrected output stayed identical, edit records reconstructed that output, and repeat analysis reported no further edits.
-- Browser checks confirmed overlapping causes, keyboard toggles, EN/PL selection, copied corrected text and reproducible examples, and a responsive mobile layout. Final independent code reviews follow before handoff.
+- Browser checks confirmed overlapping causes, keyboard toggles and focus, EN/PL selection, copied corrected text and reproducible examples, existing-space and group-limit handling, empty input, and all rules disabled. Layout checks passed at 320, 390, and 1024 pixels, with 44-pixel checkbox labels and no page overflow. No browser console errors were reported.
+- Independent Standards and Spec reviews against `8e301c1...HEAD` found no material issues. The Spec reviewer also checked 384 locale/input/settings combinations independently.
