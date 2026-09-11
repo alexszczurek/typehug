@@ -4,7 +4,9 @@ This is a static English landing page with an English and Polish playground, ini
 
 The analysis API, result types, and rule descriptions are available since `0.2.0`. The copyable npm example uses `glue` with the selected locale and rule-family settings to reproduce the corrected text. Use `analyze` when an application also needs the change records.
 
-The playground explains actual replacements and their supporting rule families. It does not list skipped candidates or certify unchanged text. All five families begin enabled; when families overlap, disabling one can leave an edit supported by another. Change explanations remain visible without hover, and copy actions exclude the preview annotations.
+The playground puts the original and corrected text in one comparison card. **Edit text** replaces the original preview with a textarea; **Done** or Escape returns to the preview and keeps the edits. Rules, change explanations, original-text inspection and the copyable npm example are closed disclosures below the card. Opening one closes the previous disclosure. Links such as `#text-inspector` open the targeted panel.
+
+The playground explains actual replacements and their supporting rule families. It does not list skipped candidates or certify unchanged text. All five families begin enabled; when families overlap, disabling one can leave an edit supported by another. Copy actions exclude the preview annotations. Installation shows a plain-text example first; HTML, formatted runs and the editorial-rule reference expand on request.
 
 ```sh
 npm run site:dev
@@ -42,10 +44,14 @@ For another static host, run `npm run site:build` and serve `site/dist`. Set `TY
 
 - `index.html` and `styles.css` contain the page content and layout.
 - `main.ts` handles the playground and copying.
-- `examples.json` provides the shared build-time and browser samples.
+- `examples.json` provides the labeled English/Polish sample pairs shared by the build and browser. The first sample is the initial preview.
 - `og-image.png` is the 1200 × 630 social preview, copied unchanged to the site root. `og-image.svg` is its editable source.
 - `page.md` is the Markdown version of the page, served at `index.md`.
 - `docs/api.md`, `docs/rules.md`, and the changelog are copied from the repository at build time.
 - `changelog/rss.xml` describes published releases. Add the new release in `scripts/build-site.mjs`, preserving earlier entries, and update the version links in `index.html` and `page.md`.
 
 The page uses system fonts, no remote assets, and no analytics. Preview text stays in the browser. There are no scroll or intro animations. Controls use short color transitions only when reduced motion is not requested.
+
+The optional original-text inspector is website-only. `inspection.ts` describes the explicit character catalog and reuses the core's internal tokenizer for protected text. `inspection-view.ts` creates escaped, paged excerpts for both prerendering and browser updates. It never inserts labels into the normal preview, copied text or npm snippets. The scanner is not a public npm export. Its behavior and Unicode sources are documented in `docs/inspection.md`, which the site also serves.
+
+The example picker offers everyday text, numbers and references, invisible characters, and links/email. Switching language loads the same example in that language. Editing an example selects **Your own text** and saves a draft for that language in memory. Trying another example preserves that draft until the page is reloaded. Selecting **Your own text** opens the editor. Example changes retain the rule selection and preview width and leave disclosures as the user set them.

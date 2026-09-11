@@ -1,6 +1,7 @@
 import { analyze, glue, glueRuns, ruleDescriptions, type Locale, type RuleName } from "@typehug/all";
 import examples from "./examples.json";
 import { createInstallCommand, createSnippet, defaultRules, explanationContext, previewSegments, ruleLabels, ruleNames } from "./playground";
+import { createInspectionView, inspectionPageSize } from "./inspection-view";
 
 function element<T extends HTMLElement>(
   id: string,
@@ -14,6 +15,11 @@ function element<T extends HTMLElement>(
 }
 
 const sourceText = element("source-text", HTMLTextAreaElement);
+const sourceEditor = element("source-editor", HTMLElement);
+const editText = element("edit-text", HTMLButtonElement);
+const rulesSummary = element("rules-summary", HTMLElement);
+const exampleSelect = element("example-select", HTMLSelectElement);
+const exampleNote = element("example-note", HTMLElement);
 const beforeText = element("before-text", HTMLParagraphElement);
 const afterText = element("after-text", HTMLParagraphElement);
 const previewPanels = [
@@ -28,9 +34,14 @@ const copyStatus = element("copy-status", HTMLElement);
 const changeList = element("change-list", HTMLOListElement);
 const changesEmpty = element("changes-empty", HTMLParagraphElement);
 const changesIntro = element("changes-intro", HTMLParagraphElement);
-const changeSummary = element("change-summary", HTMLParagraphElement);
+const changeSummary = element("change-summary", HTMLElement);
 const playgroundCode = element("playground-code", HTMLElement);
 const playgroundInstall = element("playground-install", HTMLElement);
+const textInspector = element("text-inspector", HTMLDetailsElement);
+const inspectionSummary = element("inspection-summary", HTMLElement);
+const inspectionResults = element("inspection-results", HTMLElement);
+const inspectionMore = element("inspection-more", HTMLButtonElement);
+const inspectionStatus = element("inspection-status", HTMLElement);
 const ruleInputs = ruleNames.map((name) => ({ name, input: element(`rule-${name}`, HTMLInputElement) }));
 const installCommand = element("install-command", HTMLElement);
 const packageDescription = element("package-description", HTMLElement);
@@ -51,16 +62,37 @@ const packageButtons = document.querySelectorAll<HTMLButtonElement>("[data-packa
 let locale: Locale = "en";
 let result = "";
 let countAnnouncement: number | undefined;
-const drafts: Record<Locale, string> = {
-  pl: examples.pl,
-  en: sourceText.value || examples.en,
+let inspectionLimit = inspectionPageSize;
+let inspectedSource: string | undefined;
+let inspectedLocale: Locale | undefined;
+let activeExample: (typeof examples)[number] | undefined = examples[0];
+const customDrafts: Record<Locale, string> = {
+  pl: "",
+  en: "",
 };
+if (sourceText.value !== activeExample.text.en) {
+  activeExample = undefined;
+  customDrafts.en = sourceText.value;
+}
 
 function selectedRules(): Record<RuleName, boolean> {
   const rules = { ...defaultRules };
   for (const { name, input } of ruleInputs) rules[name] = input.checked;
   return rules;
 }
+
+function setEditing(editing: boolean, focus = false): void {
+  sourceEditor.hidden = !editing;
+  beforeText.hidden = editing;
+  editText.textContent = editing ? "Done" : "Edit text";
+  editText.setAttribute("aria-expanded", String(editing));
+  if (focus) (editing ? sourceText : editText).focus();
+}
+
+editText.addEventListener("click", () => setEditing(sourceEditor.hidden, true));
+sourceText.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setEditing(false, true);
+});
 
 function addedSpace(text: string): HTMLElement {
   const mark = document.createElement("mark");
@@ -112,15 +144,32 @@ function renderChanges(source: string, analysis: ReturnType<typeof analyze>, rul
   changeSummary.textContent = `${analysis.changes.length} ${analysis.changes.length === 1 ? "space" : "spaces"} changed.`;
 }
 
+function renderInspection(source: string): void {
+  if (source !== inspectedSource || locale !== inspectedLocale) inspectionLimit = inspectionPageSize;
+  inspectedSource = source;
+  inspectedLocale = locale;
+  const view = createInspectionView(source, locale, inspectionLimit);
+  // The shared renderer escapes source text before producing inspection markup.
+  inspectionResults.innerHTML = view.html;
+  inspectionSummary.textContent = view.summary;
+  inspectionMore.hidden = view.remaining === 0;
+  inspectionMore.textContent = `Show ${Math.min(inspectionPageSize, view.remaining)} more`;
+}
+
 function render(announcementDelay = 0): void {
   const source = sourceText.value;
-  drafts[locale] = source;
+  exampleSelect.value = activeExample?.id ?? "custom";
+  exampleNote.textContent = activeExample?.description
+    ?? "Your own text stays available while you try the examples.";
   const rules = selectedRules();
+  const enabledCount = Object.values(rules).filter(Boolean).length;
+  rulesSummary.textContent = enabledCount === 5 ? "All five on" : `${enabledCount} of 5 on`;
   const analysis = analyze(source, { locale, rules });
   result = analysis.text;
   beforeText.textContent = source;
   renderPreview(analysis);
   renderChanges(source, analysis, rules);
+  renderInspection(source);
   playgroundCode.textContent = createSnippet(source, locale, rules);
   playgroundInstall.textContent = createInstallCommand(locale);
 
@@ -128,6 +177,7 @@ function render(announcementDelay = 0): void {
   const announce = () => {
     const count = analysis.changes.length;
     joinCount.textContent = `${count} nonbreaking ${count === 1 ? "space" : "spaces"} added`;
+    inspectionStatus.textContent = textInspector.open ? inspectionSummary.textContent : "";
   };
   if (announcementDelay > 0) {
     countAnnouncement = window.setTimeout(announce, announcementDelay);
@@ -137,9 +187,8 @@ function render(announcementDelay = 0): void {
 }
 
 function selectLocale(nextLocale: Locale): void {
-  drafts[locale] = sourceText.value;
   locale = nextLocale;
-  sourceText.value = drafts[locale];
+  sourceText.value = activeExample?.text[locale] ?? customDrafts[locale];
   for (const preview of [sourceText, beforeText, afterText]) {
     preview.lang = locale;
   }
@@ -156,8 +205,36 @@ for (const button of localeButtons) {
   });
 }
 
-sourceText.addEventListener("input", () => render(400));
+sourceText.addEventListener("input", () => {
+  activeExample = undefined;
+  customDrafts[locale] = sourceText.value;
+  render(400);
+});
+exampleSelect.addEventListener("change", () => {
+  activeExample = examples.find((example) => example.id === exampleSelect.value);
+  sourceText.value = activeExample?.text[locale] ?? customDrafts[locale];
+  setEditing(!activeExample, !activeExample);
+  render();
+});
 for (const { input } of ruleInputs) input.addEventListener("change", () => render());
+
+textInspector.addEventListener("toggle", () => {
+  inspectionStatus.textContent = textInspector.open ? inspectionSummary.textContent : "";
+});
+
+function openLinkedDetails(): void {
+  const target = document.getElementById(window.location.hash.slice(1));
+  if (target instanceof HTMLDetailsElement) target.open = true;
+}
+
+window.addEventListener("hashchange", openLinkedDetails);
+
+inspectionMore.addEventListener("click", () => {
+  const previousLimit = inspectionLimit;
+  inspectionLimit += inspectionPageSize;
+  renderInspection(sourceText.value);
+  inspectionResults.querySelectorAll<HTMLElement>(".inspection-item")[previousLimit]?.focus();
+});
 
 let desiredWidth = Number.isFinite(previewWidth.valueAsNumber)
   ? previewWidth.valueAsNumber
@@ -420,7 +497,8 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-pa
   });
 }
 
-sourceText.value = drafts.en;
 selectLocale("en");
+setEditing(!activeExample);
 selectPackage("en");
 updateWidth();
+openLinkedDetails();

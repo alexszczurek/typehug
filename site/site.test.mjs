@@ -12,7 +12,7 @@ import { glueHtml } from "@typehug/en/html";
 const directory = fileURLToPath(new URL("./dist/", import.meta.url));
 const html = await readFile(path.join(directory, "index.html"), "utf8");
 const document = parse(html);
-const examples = JSON.parse(await readFile(new URL("./examples.json", import.meta.url), "utf8"));
+const examples = JSON.parse(await readFile(new URL("./examples.json", import.meta.url), "utf8"))[0].text;
 
 function* descendants(node) {
   yield node;
@@ -53,6 +53,19 @@ test("the prerendered English playground contains a real Typehug result", () => 
   assert.equal(attribute(selected, "data-locale"), "en");
   const added = result.split("\u00a0").length - examples.en.split("\u00a0").length;
   assert.equal(text(byId("join-count")), `${added} nonbreaking ${added === 1 ? "space" : "spaces"} added`);
+});
+
+test("the original-text inspector is available as a collapsed disclosure without changing the preview", () => {
+  const inspector = byId("text-inspector");
+  assert.equal(inspector.tagName, "details");
+  assert.equal(attribute(inspector, "open"), undefined);
+  const summary = one(inspector.childNodes.filter((node) => node.tagName === "summary"), "inspection disclosure");
+  assert.match(text(summary), /Inspect original text/u);
+  assert.match(text(byId("inspection-results")), /No selected invisible characters or protected text found/u);
+  assert.equal(text(byId("before-text")), examples.en);
+  assert.equal(text(byId("after-text")), analyze(examples.en, { locale: "en" }).text);
+  assert.equal(attribute(byId("inspection-status"), "aria-live"), "polite");
+  assert.equal(attribute(byId("inspection-results"), "aria-live"), undefined);
 });
 
 test("the three displayed examples produce their visible text and formatting", () => {

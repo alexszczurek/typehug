@@ -34,75 +34,100 @@
           <p class="hero-description">Nonbreaking spaces for English and&nbsp;Polish.</p>
           <div class="hero-actions">
             <a class="button button-primary" href="#playground">Try Typehug</a>
-            <a class="button button-secondary" href="https://github.com/alexszczurek/typehug">GitHub</a>
+            <a class="hero-link" href="https://github.com/alexszczurek/typehug">GitHub <span aria-hidden="true">↗</span></a>
           </div>
           <a class="documentation-link" href="https://github.com/alexszczurek/typehug/blob/main/docs/api.md">Documentation</a>
         </section>
 
         <section id="playground" class="playground section" aria-labelledby="playground-title">
-          <div class="section-heading"><h2 id="playground-title">Playground</h2><p>Paste your text, choose the rules, and see what changes.</p></div>
-          <div class="playground-toolbar">
-            <div class="segmented" role="group" aria-label="Playground language">
-              <button type="button" data-locale="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
-              <button type="button" data-locale="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polish</button>
-            </div>
-            <span class="demo-hint">Added spaces are highlighted</span>
-          </div>
-          <div class="edit-demo-content">
-            <label for="source-text">Your text</label>
-            <textarea id="source-text" rows="4" maxlength="12000" lang="en" spellcheck="false" aria-describedby="text-privacy">{{DEMO_SOURCE}}</textarea>
-            <p id="text-privacy" class="input-note">Plain text, processed in your browser.</p>
-          </div>
-          <fieldset class="rule-settings" aria-describedby="rule-overlap-note">
-            <legend>Rule families</legend>
-            <div class="rule-options">
-              <label for="rule-shortWords"><input id="rule-shortWords" type="checkbox" data-rule="shortWords" checked>Short words</label>
-              <label for="rule-units"><input id="rule-units" type="checkbox" data-rule="units" checked>Numbers and units</label>
-              <label for="rule-initials"><input id="rule-initials" type="checkbox" data-rule="initials" checked>Initials</label>
-              <label for="rule-abbreviations"><input id="rule-abbreviations" type="checkbox" data-rule="abbreviations" checked>References</label>
-              <label for="rule-lastWords"><input id="rule-lastWords" type="checkbox" data-rule="lastWords" checked>Paragraph endings</label>
-            </div>
-            <p id="rule-overlap-note" class="input-note">A space can be supported by more than one rule family.</p>
-          </fieldset>
+          <div class="section-heading"><h2 id="playground-title">A little space makes a difference.</h2><p>Try an example or edit the text to see it for yourself.</p></div>
           <div class="demo-frame">
+            <div class="playground-toolbar">
+              <div class="segmented" role="group" aria-label="Playground language">
+                <button type="button" data-locale="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
+                <button type="button" data-locale="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polish</button>
+              </div>
+              <div class="example-picker">
+                <label for="example-select" class="sr-only">Example text</label>
+                <select id="example-select" aria-describedby="example-note">
+                  {{EXAMPLE_OPTIONS}}
+                  <option value="custom">Your own text</option>
+                </select>
+              </div>
+            </div>
+            <p id="example-note" class="sr-only">{{EXAMPLE_NOTE}}</p>
             <div class="comparison">
               <div class="preview-panel" id="before-panel">
-                <div class="preview-label">Original</div>
+                <div class="preview-heading"><span class="preview-label">Original</span><button id="edit-text" class="quiet-button" type="button" aria-expanded="false" aria-controls="source-editor">Edit text</button></div>
                 <p id="before-text" class="preview-text" lang="en">{{DEMO_SOURCE}}</p>
+                <div id="source-editor" class="source-editor" hidden>
+                  <label for="source-text" class="sr-only">Your text</label>
+                  <textarea id="source-text" rows="5" maxlength="12000" lang="en" spellcheck="false" placeholder="Paste or write your text…" aria-describedby="text-privacy">{{DEMO_SOURCE}}</textarea>
+                </div>
               </div>
               <div class="preview-panel preview-after" id="after-panel">
-                <div class="preview-label">With Typehug</div>
+                <div class="preview-heading"><span class="preview-label">With Typehug</span><span class="preview-hint">Joins highlighted</span></div>
                 <p id="after-text" class="preview-text" lang="en">{{DEMO_OUTPUT}}</p>
               </div>
             </div>
             <div class="playground-controls">
               <div class="width-control"><label for="preview-width">Width</label><input id="preview-width" type="range" min="180" max="420" value="260" step="1"><output id="width-value" for="preview-width">260 px</output></div>
-              <p id="join-count" class="join-count" role="status" aria-live="polite" aria-atomic="true">{{DEMO_COUNT}} nonbreaking spaces added</p>
+              <button class="button button-primary" id="copy-result" type="button">Copy result</button>
             </div>
           </div>
-          <div class="edit-demo-footer"><p>Only the text is copied, including its nonbreaking spaces.</p><button class="button button-secondary" id="copy-result" type="button">Copy result</button></div>
-          <section class="change-explanations" aria-labelledby="changes-title">
-            <div class="changes-heading"><h3 id="changes-title">What changed</h3><p id="change-summary">{{DEMO_COUNT}} spaces changed.</p></div>
-            <p id="changes-intro" class="input-note">Each highlighted space became a nonbreaking space. The reasons below explain each edit.</p>
-            <p id="changes-empty" class="empty-state" hidden>No changes for this text with the selected rules.</p>
-            <ol id="change-list" class="change-list">{{DEMO_CHANGES}}</ol>
-          </section>
-          <details class="playground-example" open>
-            <summary>Use these settings in your app</summary>
-            <div class="playground-example-content">
-              <p class="input-note">This example follows your text, language, and rule selection.</p>
-              <div class="install-command"><code id="playground-install">{{DEMO_INSTALL}}</code><button class="copy-button" type="button" data-copy-target="playground-install" aria-label="Copy playground installation command">Copy</button></div>
-              <article class="usage-card">
-                <div class="usage-card-heading"><h3>Your example</h3><button class="copy-button" type="button" data-copy-target="playground-code" aria-label="Copy your playground example">Copy example</button></div>
-                <pre><code id="playground-code">{{DEMO_SNIPPET}}</code></pre>
-              </article>
-            </div>
-          </details>
-          <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to change the language, width, or sample text.</p></noscript>
+          <div class="playground-caption"><p id="text-privacy">Your text stays in this browser.</p><p id="join-count" role="status" aria-live="polite" aria-atomic="true">{{DEMO_COUNT}} nonbreaking spaces added</p></div>
+          <div class="playground-details">
+            <details id="rules-details" class="detail-row" name="playground-details">
+              <summary>Rules <span id="rules-summary" class="detail-meta">All five on</span></summary>
+              <div class="detail-content">
+                <fieldset class="rule-settings" aria-describedby="rule-overlap-note">
+                  <legend class="sr-only">Rule families</legend>
+                  <div class="rule-options">
+                    <label for="rule-shortWords"><input id="rule-shortWords" type="checkbox" data-rule="shortWords" checked>Short words</label>
+                    <label for="rule-units"><input id="rule-units" type="checkbox" data-rule="units" checked>Numbers and units</label>
+                    <label for="rule-initials"><input id="rule-initials" type="checkbox" data-rule="initials" checked>Initials</label>
+                    <label for="rule-abbreviations"><input id="rule-abbreviations" type="checkbox" data-rule="abbreviations" checked>References</label>
+                    <label for="rule-lastWords"><input id="rule-lastWords" type="checkbox" data-rule="lastWords" checked>Paragraph endings</label>
+                  </div>
+                  <p id="rule-overlap-note" class="input-note">A space can be kept together by more than one rule.</p>
+                </fieldset>
+              </div>
+            </details>
+            <details id="changes-details" class="detail-row" name="playground-details">
+              <summary>What changed <span id="change-summary" class="detail-meta">{{DEMO_COUNT}} spaces changed.</span></summary>
+              <div class="detail-content">
+                <p id="changes-intro" class="input-note">Why Typehug joined each highlighted space.</p>
+                <p id="changes-empty" class="empty-state" hidden>No changes for this text with the selected rules.</p>
+                <ol id="change-list" class="change-list">{{DEMO_CHANGES}}</ol>
+              </div>
+            </details>
+            <details id="text-inspector" class="detail-row text-inspector" name="playground-details">
+              <summary>Inspect original text <span id="inspection-summary" class="detail-meta">{{INSPECTION_SUMMARY}}</span></summary>
+              <div class="detail-content inspection-content">
+                <p class="input-note">Characters and protected text already in your input.</p>
+                <div id="inspection-results">{{INSPECTION_RESULTS}}</div>
+                <button id="inspection-more" class="button button-secondary" type="button" {{INSPECTION_MORE_HIDDEN}}>Show more findings</button>
+                <a class="inspection-reference" href="./docs/inspection.md">About these characters</a>
+                <p id="inspection-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+              </div>
+            </details>
+            <details id="app-example" class="detail-row playground-example" name="playground-details">
+              <summary>Use in your app <span class="detail-meta">npm</span></summary>
+              <div class="detail-content playground-example-content">
+                <p class="input-note">The same text, language and rules.</p>
+                <div class="install-command"><code id="playground-install">{{DEMO_INSTALL}}</code><button class="copy-button" type="button" data-copy-target="playground-install" aria-label="Copy playground installation command">Copy</button></div>
+                <article class="usage-card">
+                  <div class="usage-card-heading"><h3>Your example</h3><button class="copy-button" type="button" data-copy-target="playground-code" aria-label="Copy your playground example">Copy example</button></div>
+                  <pre><code id="playground-code">{{DEMO_SNIPPET}}</code></pre>
+                </article>
+              </div>
+            </details>
+          </div>
+          <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to edit the text or try another example.</p></noscript>
         </section>
 
         <section class="install-section section" id="get-started" aria-labelledby="install-title">
-          <div class="section-heading"><h2 id="install-title">Installation</h2><p>Choose the language you need. The examples below follow your selection.</p></div>
+          <div class="section-heading"><h2 id="install-title">Use Typehug</h2><p>Install the language you need. Pass in your text.</p></div>
           <div class="segmented install-tabs" role="group" aria-label="Package to install">
             <button type="button" data-package="en" aria-pressed="true"><span class="language-flag" aria-hidden="true">🇺🇸</span>English</button>
             <button type="button" data-package="pl" aria-pressed="false"><span class="language-flag" aria-hidden="true">🇵🇱</span>Polish</button>
@@ -111,10 +136,6 @@
           <div class="install-command"><code id="install-command">npm install @typehug/en</code><button class="copy-button" type="button" data-copy-target="install-command" aria-label="Copy installation command">Copy</button></div>
           <p id="package-description" class="package-description" aria-live="polite">English rules and the shared engine. No Polish rules included.</p>
           <p class="install-meta">ESM <span aria-hidden="true">·</span> TypeScript <span aria-hidden="true">·</span> Node.js 22+</p>
-        </section>
-
-        <section class="usage-section section" aria-labelledby="usage-title">
-          <div class="section-heading"><h2 id="usage-title">Usage</h2><p>Pass in your text. Typehug replaces selected spaces with nonbreaking spaces.</p></div>
           <div class="usage-grid">
             <article class="usage-card">
               <div class="usage-card-heading"><h3>Plain text</h3><button class="copy-button" type="button" data-copy-target="code-text" aria-label="Copy plain text example">Copy</button></div>
@@ -124,6 +145,9 @@ glue(<span class="code-string">"I have a question."</span>);</code></pre>
               <div class="code-result"><span>Output</span><p id="result-text" lang="en"><mark>I&nbsp;have</mark> <mark>a&nbsp;question.</mark></p></div>
               <p class="usage-note">Returns a string with Unicode nonbreaking spaces. Render it as text, including in React.</p>
             </article>
+            <details class="integration-details detail-row">
+              <summary>HTML and formatted text <span class="detail-meta">More examples</span></summary>
+              <div class="detail-content usage-grid">
             <article class="usage-card">
               <div class="usage-card-heading"><h3>HTML</h3><button class="copy-button" type="button" data-copy-target="code-html" aria-label="Copy HTML example">Copy</button></div>
               <pre><code id="code-html"><span class="code-keyword">import</span> { glueHtml } <span class="code-keyword">from</span> <span class="code-string">"@typehug/en/html"</span>;
@@ -143,12 +167,15 @@ glueRuns([
               <div class="code-result"><span>Output</span><p id="result-runs" lang="en"><mark>I&nbsp;have</mark> <mark>a&nbsp;<b>question.</b></mark></p></div>
               <p class="usage-note">Preserves formatting metadata and leaves the input objects unchanged.</p>
             </article>
+                <p class="usage-caveat" id="usage-caveat">Examples use English. With <code>@typehug/all</code>, pass <code>{ locale: "en" }</code> or <code>{ locale: "pl" }</code> as the second argument. HTML is parsed and serialized, so entity spellings and markup may normalize.</p>
+              </div>
+            </details>
           </div>
-          <p class="usage-caveat" id="usage-caveat">Examples use English. With <code>@typehug/all</code>, pass <code>{ locale: "en" }</code> or <code>{ locale: "pl" }</code> as the second argument. HTML is parsed and serialized, so entity spellings and markup may normalize.</p>
         </section>
 
-        <section class="rules-section section" aria-labelledby="rules-title">
-          <div class="section-heading"><h2 id="rules-title">Rules</h2><p>Five rule families, enabled by default. Each can be switched off.</p></div>
+        <details class="rules-section detail-row">
+          <summary>Editorial rules <span class="detail-meta">Conventions and sources</span></summary>
+          <div class="detail-content">
           <dl class="rule-list">
             <div><dt>Short words</dt><dd>English a, A, I. Polish a, i, o, u, w, z.</dd><dd class="rule-example" lang="en">a&nbsp;word</dd></div>
             <div><dt>Units</dt><dd>Numbers with recognized unit symbols.</dd><dd class="rule-example">30&nbsp;min</dd></div>
@@ -158,7 +185,8 @@ glueRuns([
           </dl>
           <p class="rules-note">English short-word joins and paragraph endings are editorial preferences. Typehug uses text rules, not screen measurements.</p>
           <a class="text-link" href="https://github.com/alexszczurek/typehug/blob/main/docs/rules.md">Read the rules and sources <span aria-hidden="true">↗</span></a>
-        </section>
+          </div>
+        </details>
       </main>
 
       <footer class="site-footer">
