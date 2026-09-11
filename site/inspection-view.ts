@@ -10,7 +10,7 @@ function escapeHtml(value: string): string {
 }
 
 function findingMarkup(source: string, finding: InspectionFinding, locale: Locale): string {
-  const context = explanationContext(source, finding);
+  const context = explanationContext(source, finding, 20);
   const value = Array.from(source.slice(finding.start, finding.end));
   const marker = finding.kind === "character"
     ? `[${finding.marker}]`

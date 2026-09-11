@@ -3,7 +3,6 @@
     "id": "everyday",
     "label": "Everyday text",
     "description": "Compare short words and paragraph endings at different widths.",
-    "inspect": false,
     "text": {
       "en": "I brought a notebook. We have 30 min to turn a good idea into a first draft.",
       "pl": "Zabierz notes i spotkajmy się w małej kawiarni. Mamy 30 min na rozmowę o tym, co zrobimy dalej."
@@ -13,7 +12,6 @@
     "id": "numbers",
     "label": "Numbers & references",
     "description": "Compare initials, references and numbers with units.",
-    "inspect": false,
     "text": {
       "en": "Dr. J. R. Carter walks 5 km in 30 min. See Fig. 2 on p. 12 for a route map and the final notes.",
       "pl": "Prof. J. R. Nowak pokonuje 5 km w 30 min. Zobacz rys. 2 na str. 12, a potem porównaj wyniki."
@@ -22,8 +20,7 @@
   {
     "id": "invisible",
     "label": "Invisible characters",
-    "description": "The inspector below reveals five characters already present in this text.",
-    "inspect": true,
+    "description": "Open Inspect original text to see five existing invisible characters.",
     "text": {
       "en": "The label reads 30\u00a0min and 5\u202fkm. Try re\u00adflow, a break after the slash in web/\u200bmobile, and this emoji: 👩\u200d💻.",
       "pl": "Na etykiecie jest 30\u00a0min i 5\u202fkm. Sprawdź typo\u00adgrafię, podział po ukośniku w web/\u200bmobile i emoji: 👩\u200d💻."
@@ -33,7 +30,6 @@
     "id": "links",
     "label": "Links & email",
     "description": "See which text Typehug protects while correcting the surrounding prose.",
-    "inspect": true,
     "text": {
       "en": "Read a guide at https://example.com/guide or email hello@example.org. We have 30 min to discuss a better layout.",
       "pl": "Przeczytaj poradnik na https://example.com/guide lub napisz na hello@example.org. Mamy 30 min na rozmowę o składzie."

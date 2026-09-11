@@ -15,6 +15,9 @@ function element<T extends HTMLElement>(
 }
 
 const sourceText = element("source-text", HTMLTextAreaElement);
+const sourceEditor = element("source-editor", HTMLElement);
+const editText = element("edit-text", HTMLButtonElement);
+const rulesSummary = element("rules-summary", HTMLElement);
 const exampleSelect = element("example-select", HTMLSelectElement);
 const exampleNote = element("example-note", HTMLElement);
 const beforeText = element("before-text", HTMLParagraphElement);
@@ -31,7 +34,7 @@ const copyStatus = element("copy-status", HTMLElement);
 const changeList = element("change-list", HTMLOListElement);
 const changesEmpty = element("changes-empty", HTMLParagraphElement);
 const changesIntro = element("changes-intro", HTMLParagraphElement);
-const changeSummary = element("change-summary", HTMLParagraphElement);
+const changeSummary = element("change-summary", HTMLElement);
 const playgroundCode = element("playground-code", HTMLElement);
 const playgroundInstall = element("playground-install", HTMLElement);
 const textInspector = element("text-inspector", HTMLDetailsElement);
@@ -77,6 +80,19 @@ function selectedRules(): Record<RuleName, boolean> {
   for (const { name, input } of ruleInputs) rules[name] = input.checked;
   return rules;
 }
+
+function setEditing(editing: boolean, focus = false): void {
+  sourceEditor.hidden = !editing;
+  beforeText.hidden = editing;
+  editText.textContent = editing ? "Done" : "Edit text";
+  editText.setAttribute("aria-expanded", String(editing));
+  if (focus) (editing ? sourceText : editText).focus();
+}
+
+editText.addEventListener("click", () => setEditing(sourceEditor.hidden, true));
+sourceText.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") setEditing(false, true);
+});
 
 function addedSpace(text: string): HTMLElement {
   const mark = document.createElement("mark");
@@ -146,6 +162,8 @@ function render(announcementDelay = 0): void {
   exampleNote.textContent = activeExample?.description
     ?? "Your own text stays available while you try the examples.";
   const rules = selectedRules();
+  const enabledCount = Object.values(rules).filter(Boolean).length;
+  rulesSummary.textContent = enabledCount === 5 ? "All five on" : `${enabledCount} of 5 on`;
   const analysis = analyze(source, { locale, rules });
   result = analysis.text;
   beforeText.textContent = source;
@@ -195,7 +213,7 @@ sourceText.addEventListener("input", () => {
 exampleSelect.addEventListener("change", () => {
   activeExample = examples.find((example) => example.id === exampleSelect.value);
   sourceText.value = activeExample?.text[locale] ?? customDrafts[locale];
-  if (activeExample?.inspect) textInspector.open = true;
+  setEditing(!activeExample, !activeExample);
   render();
 });
 for (const { input } of ruleInputs) input.addEventListener("change", () => render());
@@ -203,6 +221,13 @@ for (const { input } of ruleInputs) input.addEventListener("change", () => rende
 textInspector.addEventListener("toggle", () => {
   inspectionStatus.textContent = textInspector.open ? inspectionSummary.textContent : "";
 });
+
+function openLinkedDetails(): void {
+  const target = document.getElementById(window.location.hash.slice(1));
+  if (target instanceof HTMLDetailsElement) target.open = true;
+}
+
+window.addEventListener("hashchange", openLinkedDetails);
 
 inspectionMore.addEventListener("click", () => {
   const previousLimit = inspectionLimit;
@@ -473,5 +498,7 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-pa
 }
 
 selectLocale("en");
+setEditing(!activeExample);
 selectPackage("en");
 updateWidth();
+openLinkedDetails();

@@ -1,6 +1,6 @@
 # Inspecting original text
 
-The Typehug playground includes an optional **Inspect original text** panel. It describes selected invisible characters and address-like tokens already present in the pasted plain text. Open the panel to see each finding in context.
+The Typehug playground includes an optional **Inspect original text** panel below the comparison. It describes selected invisible characters and address-like tokens already present in the pasted plain text. Open the panel to see each finding in context. Choosing an example updates the summary without opening the panel; a direct `#text-inspector` link opens it.
 
 Findings describe content. Their presence does not establish a typo or a reason to remove a character. The normal before/after preview remains available for judging wrapping. Bracketed labels such as `[NBSP]` appear only in inspection excerpts and are not part of the source, corrected result or copied example.
 

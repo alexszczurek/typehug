@@ -41,11 +41,11 @@ export function previewSegments(analysis: ReturnType<typeof analyze>): Array<{ t
   return segments;
 }
 
-export function explanationContext(source: string, change: { start: number; end: number }): { before: string; after: string } {
-  const before = Array.from(source.slice(Math.max(0, change.start - 82), change.start));
-  const after = Array.from(source.slice(change.end, change.end + 82));
+export function explanationContext(source: string, change: { start: number; end: number }, length = 40): { before: string; after: string } {
+  const before = Array.from(source.slice(Math.max(0, change.start - length * 2 - 2), change.start));
+  const after = Array.from(source.slice(change.end, change.end + length * 2 + 2));
   return {
-    before: `${before.length > 40 ? "…" : ""}${before.slice(-40).join("")}`,
-    after: `${after.slice(0, 40).join("")}${after.length > 40 ? "…" : ""}`,
+    before: `${before.length > length ? "…" : ""}${before.slice(-length).join("")}`,
+    after: `${after.slice(0, length).join("")}${after.length > length ? "…" : ""}`,
   };
 }
