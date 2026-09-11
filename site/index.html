@@ -48,6 +48,14 @@
             </div>
             <span class="demo-hint">Added spaces are highlighted</span>
           </div>
+          <div class="example-picker">
+            <label for="example-select">Example text</label>
+            <select id="example-select" aria-describedby="example-note">
+              {{EXAMPLE_OPTIONS}}
+              <option value="custom">Your own text</option>
+            </select>
+          </div>
+          <p id="example-note" class="input-note">{{EXAMPLE_NOTE}}</p>
           <div class="edit-demo-content">
             <label for="source-text">Your text</label>
             <textarea id="source-text" rows="4" maxlength="12000" lang="en" spellcheck="false" aria-describedby="text-privacy">{{DEMO_SOURCE}}</textarea>
@@ -108,7 +116,7 @@
               </article>
             </div>
           </details>
-          <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to change the language, width, or sample text.</p></noscript>
+          <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to choose examples or change the language, width, or text.</p></noscript>
         </section>
 
         <section class="install-section section" id="get-started" aria-labelledby="install-title">

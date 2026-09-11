@@ -12,7 +12,7 @@ import { glueHtml } from "@typehug/en/html";
 const directory = fileURLToPath(new URL("./dist/", import.meta.url));
 const html = await readFile(path.join(directory, "index.html"), "utf8");
 const document = parse(html);
-const examples = JSON.parse(await readFile(new URL("./examples.json", import.meta.url), "utf8"));
+const examples = JSON.parse(await readFile(new URL("./examples.json", import.meta.url), "utf8"))[0].text;
 
 function* descendants(node) {
   yield node;

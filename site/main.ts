@@ -15,6 +15,8 @@ function element<T extends HTMLElement>(
 }
 
 const sourceText = element("source-text", HTMLTextAreaElement);
+const exampleSelect = element("example-select", HTMLSelectElement);
+const exampleNote = element("example-note", HTMLElement);
 const beforeText = element("before-text", HTMLParagraphElement);
 const afterText = element("after-text", HTMLParagraphElement);
 const previewPanels = [
@@ -60,10 +62,15 @@ let countAnnouncement: number | undefined;
 let inspectionLimit = inspectionPageSize;
 let inspectedSource: string | undefined;
 let inspectedLocale: Locale | undefined;
-const drafts: Record<Locale, string> = {
-  pl: examples.pl,
-  en: sourceText.value || examples.en,
+let activeExample: (typeof examples)[number] | undefined = examples[0];
+const customDrafts: Record<Locale, string> = {
+  pl: "",
+  en: "",
 };
+if (sourceText.value !== activeExample.text.en) {
+  activeExample = undefined;
+  customDrafts.en = sourceText.value;
+}
 
 function selectedRules(): Record<RuleName, boolean> {
   const rules = { ...defaultRules };
@@ -135,7 +142,9 @@ function renderInspection(source: string): void {
 
 function render(announcementDelay = 0): void {
   const source = sourceText.value;
-  drafts[locale] = source;
+  exampleSelect.value = activeExample?.id ?? "custom";
+  exampleNote.textContent = activeExample?.description
+    ?? "Your own text stays available while you try the examples.";
   const rules = selectedRules();
   const analysis = analyze(source, { locale, rules });
   result = analysis.text;
@@ -160,9 +169,8 @@ function render(announcementDelay = 0): void {
 }
 
 function selectLocale(nextLocale: Locale): void {
-  drafts[locale] = sourceText.value;
   locale = nextLocale;
-  sourceText.value = drafts[locale];
+  sourceText.value = activeExample?.text[locale] ?? customDrafts[locale];
   for (const preview of [sourceText, beforeText, afterText]) {
     preview.lang = locale;
   }
@@ -179,7 +187,17 @@ for (const button of localeButtons) {
   });
 }
 
-sourceText.addEventListener("input", () => render(400));
+sourceText.addEventListener("input", () => {
+  activeExample = undefined;
+  customDrafts[locale] = sourceText.value;
+  render(400);
+});
+exampleSelect.addEventListener("change", () => {
+  activeExample = examples.find((example) => example.id === exampleSelect.value);
+  sourceText.value = activeExample?.text[locale] ?? customDrafts[locale];
+  if (activeExample?.inspect) textInspector.open = true;
+  render();
+});
 for (const { input } of ruleInputs) input.addEventListener("change", () => render());
 
 textInspector.addEventListener("toggle", () => {
@@ -454,7 +472,6 @@ for (const button of document.querySelectorAll<HTMLButtonElement>("[data-copy-pa
   });
 }
 
-sourceText.value = drafts.en;
 selectLocale("en");
 selectPackage("en");
 updateWidth();

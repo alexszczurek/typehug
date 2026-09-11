@@ -3,8 +3,8 @@
 @layer reset {
   *, *::before, *::after { box-sizing: border-box; }
   body, h1, h2, h3, p, pre, dl, dd { margin: 0; }
-  button, input, textarea { font: inherit; }
-  button, a, input, textarea, summary { -webkit-tap-highlight-color: transparent; }
+  button, input, textarea, select { font: inherit; }
+  button, a, input, textarea, select, summary { -webkit-tap-highlight-color: transparent; }
   button { color: inherit; cursor: pointer; border: 0; background: none; }
   a { color: inherit; text-decoration: none; }
 }
@@ -67,6 +67,10 @@
   .language-flag { font-size: 15px; line-height: 1; }
   .segmented button[aria-pressed="true"] { background: var(--color-surface); color: var(--color-ink); border-color: var(--color-border-subtle); box-shadow: var(--shadow-control); }
   .demo-hint { color: var(--color-faint); font-size: 12px; }
+  .example-picker { display: flex; align-items: center; flex-wrap: wrap; gap: 8px 16px; }
+  .example-picker label { font-size: 13px; font-weight: 500; }
+  .example-picker select { min-height: 44px; min-width: 0; max-width: 100%; padding: 8px 12px; border: 1px solid var(--color-border-control); border-radius: 7px; background: var(--color-canvas); color: var(--color-ink); font-size: 16px; cursor: pointer; }
+  .example-picker + .input-note { margin-top: -8px; }
   .demo-frame { border: 1px solid var(--color-border-subtle); border-radius: 8px; overflow: hidden; }
   .comparison { display: grid; grid-template-columns: 1fr 1fr; }
   .preview-panel { min-width: 0; padding: 20px; min-height: 204px; }
@@ -172,6 +176,7 @@
 
 @layer responsive {
   @media (max-width: 560px) {
+    .example-picker { align-items: stretch; flex-direction: column; gap: 6px; }
     .inspection-summary { display: block; margin: 4px 0 0 16px; }
     .page-shell { padding-inline: 24px; }
     .hero { padding-top: 76px; }

@@ -54,7 +54,8 @@ async function loadPresentation(name) {
 }
 const { createSnippet, createInstallCommand, defaultRules, previewSegments, explanationContext, ruleLabels } = await loadPresentation("playground");
 const { createInspectionView } = await loadPresentation("inspection-view");
-const samples = JSON.parse(await read("examples.json"));
+const examples = JSON.parse(await read("examples.json"));
+const samples = examples[0].text;
 const analysis = analyze(samples.en, { locale: "en" });
 const inspection = createInspectionView(samples.en, "en");
 const marked = previewSegments(analysis).map(({ text, added }) => added
@@ -79,6 +80,8 @@ const replacements = {
   OG_IMAGE_URL: escape(new URL("og-image.png", siteUrl).href),
   STYLE_URL: asset("site/styles.css"),
   SCRIPT_URL: asset("site/main.ts"),
+  EXAMPLE_OPTIONS: examples.map((example, index) => `<option value="${escape(example.id)}"${index === 0 ? " selected" : ""}>${escape(example.label)}</option>`).join("\n              "),
+  EXAMPLE_NOTE: escape(examples[0].description),
   DEMO_SOURCE: escape(samples.en),
   DEMO_OUTPUT: marked,
   DEMO_COUNT: String(analysis.changes.length),
