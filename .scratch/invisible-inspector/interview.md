@@ -60,3 +60,14 @@ Implementation starts from `388dc5fd24aadc0b4e00f69585c20e85a0d75892` on `codex/
 Use the existing website helper and built-page test boundaries for character detection, source ranges, escaped excerpts, empty states and generated markup. Existing public correction tests cover behavior preservation through the internal tokenization extraction. Verify the actual interface in the browser for disclosure keyboard operation, locale changes, disabled rules, narrow layouts, ordinary preview preservation, copied output and long findings lists. These checks exercise the approved feature and existing behavior rather than creating a new public inspection API.
 
 The implementation does not publish npm packages. A local preview and reviewed commit make the website change ready for deployment.
+
+## Completed verification
+
+- Implemented in commit `a399f77`. Public exports and package versions remain at `0.2.0`.
+- `npm run check` passed: 62 public library tests, declaration checks and isolated packed-package consumer checks.
+- `npm run site:check` passed: site build, type checks and 21 tests. These include all eight character types, Unicode source positions, overlapping protection, profile exceptions, escaped pasted markup and bounded initial result rendering.
+- A deterministic differential check of 64,000 cases across both profiles and all 32 rule selections found identical analysis results before and after the tokenizer extraction.
+- Independent Standards and Spec reviews against `388dc5f...a399f77` reported no actionable findings.
+- Browser checks passed for native keyboard disclosure, source changes, English/Polish protection differences, findings with all rules disabled, empty input, mobile widths of 320 and 390 pixels and pagination from 50 to 55 findings with focus moved to the newly revealed item.
+- Copy checks preserved all eight character types and an emoji joiner sequence exactly. A separate example confirmed existing NBSP findings remain separate from new edits and that the copied npm snippet reproduces the original source without inspection labels.
+- The existing GitHub Actions matrix includes both package and site checks on Node.js 22 and 24. This local branch has not been pushed or deployed as part of this implementation.
