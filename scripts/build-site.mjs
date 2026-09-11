@@ -39,17 +39,24 @@ function asset(entryPoint) {
 // bundle is evaluated only during the build and is not a published site asset.
 const presentation = await build({
   absWorkingDir: root,
-  entryPoints: ["site/playground.ts"],
+  entryPoints: ["site/playground.ts", "site/inspection-view.ts"],
+  outdir: ".artifacts/site-presentation",
   bundle: true,
   write: false,
   format: "esm",
   platform: "node",
   target: "es2022",
 });
-const { createSnippet, createInstallCommand, defaultRules, previewSegments, explanationContext, ruleLabels } =
-  await import(`data:text/javascript;base64,${Buffer.from(presentation.outputFiles[0].contents).toString("base64")}`);
+async function loadPresentation(name) {
+  const compiled = presentation.outputFiles.find((file) => path.basename(file.path) === `${name}.js`);
+  if (!compiled) throw new Error(`Missing presentation module ${name}`);
+  return import(`data:text/javascript;base64,${Buffer.from(compiled.contents).toString("base64")}`);
+}
+const { createSnippet, createInstallCommand, defaultRules, previewSegments, explanationContext, ruleLabels } = await loadPresentation("playground");
+const { createInspectionView } = await loadPresentation("inspection-view");
 const samples = JSON.parse(await read("examples.json"));
 const analysis = analyze(samples.en, { locale: "en" });
+const inspection = createInspectionView(samples.en, "en");
 const marked = previewSegments(analysis).map(({ text, added }) => added
   ? `<mark class="added-space" aria-label="Nonbreaking space added">${escape(text)}</mark>`
   : escape(text)).join("");
@@ -78,6 +85,9 @@ const replacements = {
   DEMO_CHANGES: explanations,
   DEMO_SNIPPET: escape(createSnippet(samples.en, "en", defaultRules)),
   DEMO_INSTALL: escape(createInstallCommand("en")),
+  INSPECTION_SUMMARY: escape(inspection.summary),
+  INSPECTION_RESULTS: inspection.html,
+  INSPECTION_MORE_HIDDEN: inspection.remaining === 0 ? "hidden" : "",
 };
 const html = (await read("index.html")).replace(/\{\{([A-Z_]+)\}\}/gu, (_, key) => {
   if (!(key in replacements)) throw new Error(`Unknown template field ${key}`);
@@ -88,7 +98,7 @@ await copyFile(path.join(source, "favicon.svg"), path.join(output, "favicon.svg"
 await copyFile(path.join(source, "og-image.png"), path.join(output, "og-image.png"));
 await copyFile(path.join(source, "page.md"), path.join(output, "index.md"));
 await mkdir(path.join(output, "docs"), { recursive: true });
-for (const name of ["api.md", "rules.md"]) {
+for (const name of ["api.md", "rules.md", "inspection.md"]) {
   await copyFile(path.join(root, "docs", name), path.join(output, "docs", name));
 }
 await copyFile(path.join(root, "CHANGELOG.md"), path.join(output, "changelog.md"));

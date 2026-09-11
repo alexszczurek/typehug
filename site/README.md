@@ -49,3 +49,5 @@ For another static host, run `npm run site:build` and serve `site/dist`. Set `TY
 - `changelog/rss.xml` describes published releases. Add the new release in `scripts/build-site.mjs`, preserving earlier entries, and update the version links in `index.html` and `page.md`.
 
 The page uses system fonts, no remote assets, and no analytics. Preview text stays in the browser. There are no scroll or intro animations. Controls use short color transitions only when reduced motion is not requested.
+
+The optional original-text inspector is website-only. `inspection.ts` describes the explicit character catalog and reuses the core's internal tokenizer for protected text. `inspection-view.ts` creates escaped, paged excerpts for both prerendering and browser updates. It never inserts labels into the normal preview, copied text or npm snippets. The scanner is not a public npm export. Its behavior and Unicode sources are documented in `docs/inspection.md`, which the site also serves.

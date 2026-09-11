@@ -82,6 +82,8 @@ The preview explains actual changes. A no-changes result means the selected rule
 
 Copy the corrected text or the npm example. The example uses `glue` with the selected locale and rule settings. The playground's `analyze` API, result types, and rule descriptions are available since `0.2.0`. Use them to display change explanations in your application. See the [analysis API reference](./docs/api.md#change-analysis).
 
+Open **Inspect original text** to identify selected invisible characters and protected address-like text already present in your input. The panel explains nonbreaking spaces, soft hyphens and joining controls in context. It preserves your text and keeps its labels separate from the ordinary preview and copied result. This inspector is currently a website feature. See the [character reference](./docs/inspection.md).
+
 ## Links
 
 - [GitHub](https://github.com/alexszczurek/typehug)

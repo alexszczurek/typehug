@@ -87,6 +87,16 @@
             <p id="changes-empty" class="empty-state" hidden>No changes for this text with the selected rules.</p>
             <ol id="change-list" class="change-list">{{DEMO_CHANGES}}</ol>
           </section>
+          <details id="text-inspector" class="text-inspector">
+            <summary>Inspect original text <span id="inspection-summary" class="inspection-summary">{{INSPECTION_SUMMARY}}</span></summary>
+            <div class="inspection-content">
+              <p class="input-note">See selected invisible characters and protected text already in your input. Each label describes what is there.</p>
+              <div id="inspection-results">{{INSPECTION_RESULTS}}</div>
+              <button id="inspection-more" class="button button-secondary" type="button" {{INSPECTION_MORE_HIDDEN}}>Show more findings</button>
+              <p class="input-note">Labels appear only here. <a class="inspection-reference" href="./docs/inspection.md">About these characters</a></p>
+              <p id="inspection-status" class="sr-only" role="status" aria-live="polite" aria-atomic="true"></p>
+            </div>
+          </details>
           <details class="playground-example" open>
             <summary>Use these settings in your app</summary>
             <div class="playground-example-content">

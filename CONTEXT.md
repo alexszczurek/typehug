@@ -34,3 +34,6 @@ The set of rule families enabled for a preview or automatic correction. Disablin
 **Change analysis**:
 The corrected text together with a record of its actual changes and their editorial reasons. It describes changes under the selected rules, rather than assessing every aspect of typography or identifying every possible problem.
 _Avoid_: Complete typography audit.
+
+**Text inspection**:
+An explanation of selected invisible characters and protected text already present in the source. An inspection finding describes existing content without treating its presence as an error or a proposed correction.

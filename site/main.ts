@@ -1,6 +1,7 @@
 import { analyze, glue, glueRuns, ruleDescriptions, type Locale, type RuleName } from "@typehug/all";
 import examples from "./examples.json";
 import { createInstallCommand, createSnippet, defaultRules, explanationContext, previewSegments, ruleLabels, ruleNames } from "./playground";
+import { createInspectionView, inspectionPageSize } from "./inspection-view";
 
 function element<T extends HTMLElement>(
   id: string,
@@ -31,6 +32,11 @@ const changesIntro = element("changes-intro", HTMLParagraphElement);
 const changeSummary = element("change-summary", HTMLParagraphElement);
 const playgroundCode = element("playground-code", HTMLElement);
 const playgroundInstall = element("playground-install", HTMLElement);
+const textInspector = element("text-inspector", HTMLDetailsElement);
+const inspectionSummary = element("inspection-summary", HTMLElement);
+const inspectionResults = element("inspection-results", HTMLElement);
+const inspectionMore = element("inspection-more", HTMLButtonElement);
+const inspectionStatus = element("inspection-status", HTMLElement);
 const ruleInputs = ruleNames.map((name) => ({ name, input: element(`rule-${name}`, HTMLInputElement) }));
 const installCommand = element("install-command", HTMLElement);
 const packageDescription = element("package-description", HTMLElement);
@@ -51,6 +57,9 @@ const packageButtons = document.querySelectorAll<HTMLButtonElement>("[data-packa
 let locale: Locale = "en";
 let result = "";
 let countAnnouncement: number | undefined;
+let inspectionLimit = inspectionPageSize;
+let inspectedSource: string | undefined;
+let inspectedLocale: Locale | undefined;
 const drafts: Record<Locale, string> = {
   pl: examples.pl,
   en: sourceText.value || examples.en,
@@ -112,6 +121,18 @@ function renderChanges(source: string, analysis: ReturnType<typeof analyze>, rul
   changeSummary.textContent = `${analysis.changes.length} ${analysis.changes.length === 1 ? "space" : "spaces"} changed.`;
 }
 
+function renderInspection(source: string): void {
+  if (source !== inspectedSource || locale !== inspectedLocale) inspectionLimit = inspectionPageSize;
+  inspectedSource = source;
+  inspectedLocale = locale;
+  const view = createInspectionView(source, locale, inspectionLimit);
+  // The shared renderer escapes source text before producing inspection markup.
+  inspectionResults.innerHTML = view.html;
+  inspectionSummary.textContent = view.summary;
+  inspectionMore.hidden = view.remaining === 0;
+  inspectionMore.textContent = `Show ${Math.min(inspectionPageSize, view.remaining)} more`;
+}
+
 function render(announcementDelay = 0): void {
   const source = sourceText.value;
   drafts[locale] = source;
@@ -121,6 +142,7 @@ function render(announcementDelay = 0): void {
   beforeText.textContent = source;
   renderPreview(analysis);
   renderChanges(source, analysis, rules);
+  renderInspection(source);
   playgroundCode.textContent = createSnippet(source, locale, rules);
   playgroundInstall.textContent = createInstallCommand(locale);
 
@@ -128,6 +150,7 @@ function render(announcementDelay = 0): void {
   const announce = () => {
     const count = analysis.changes.length;
     joinCount.textContent = `${count} nonbreaking ${count === 1 ? "space" : "spaces"} added`;
+    inspectionStatus.textContent = textInspector.open ? inspectionSummary.textContent : "";
   };
   if (announcementDelay > 0) {
     countAnnouncement = window.setTimeout(announce, announcementDelay);
@@ -158,6 +181,17 @@ for (const button of localeButtons) {
 
 sourceText.addEventListener("input", () => render(400));
 for (const { input } of ruleInputs) input.addEventListener("change", () => render());
+
+textInspector.addEventListener("toggle", () => {
+  inspectionStatus.textContent = textInspector.open ? inspectionSummary.textContent : "";
+});
+
+inspectionMore.addEventListener("click", () => {
+  const previousLimit = inspectionLimit;
+  inspectionLimit += inspectionPageSize;
+  renderInspection(sourceText.value);
+  inspectionResults.querySelectorAll<HTMLElement>(".inspection-item")[previousLimit]?.focus();
+});
 
 let desiredWidth = Number.isFinite(previewWidth.valueAsNumber)
   ? previewWidth.valueAsNumber

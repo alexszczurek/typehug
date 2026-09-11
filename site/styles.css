@@ -102,6 +102,22 @@
   .change-reasons { display: flex; flex-direction: column; gap: 4px; margin: 8px 0 0; padding: 0; list-style: none; font-size: 12px; line-height: 1.6; color: var(--color-muted); }
   .change-reasons strong { font-weight: 550; color: var(--color-ink); }
   .empty-state { padding: 16px 0; font-size: 13px; color: var(--color-muted); }
+  .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+  .text-inspector { min-width: 0; border-block: 1px solid var(--color-border-subtle); }
+  .text-inspector summary { min-height: 44px; padding: 12px 0; font-size: 13px; font-weight: 500; cursor: pointer; }
+  .inspection-summary { margin-left: 12px; color: var(--color-muted); font-size: 12px; font-weight: 400; font-variant-numeric: tabular-nums; }
+  .inspection-content { display: flex; flex-direction: column; align-items: stretch; gap: 12px; padding: 4px 0 16px; }
+  .inspection-list { margin: 0; padding-left: 24px; }
+  .inspection-item { padding: 14px 0; border-bottom: 1px solid var(--color-border-subtle); }
+  .inspection-item::marker { color: var(--color-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .inspection-heading { display: flex; align-items: baseline; flex-wrap: wrap; gap: 4px 12px; font-size: 13px; }
+  .inspection-heading strong { font-weight: 550; }
+  .inspection-heading code { color: var(--color-muted); font-size: 11px; }
+  .inspection-context { margin-top: 6px; font-family: "SFMono-Regular", Consolas, monospace; font-size: 12px; line-height: 1.9; white-space: pre-wrap; overflow-wrap: anywhere; unicode-bidi: plaintext; }
+  .inspection-token { padding: 2px 3px; background: var(--color-surface); border: 1px solid var(--color-border-control); border-radius: 3px; }
+  .inspection-explanation { margin-top: 6px; color: var(--color-muted); font-size: 12px; }
+  .inspection-content > button { align-self: flex-start; }
+  .inspection-reference { display: inline-flex; align-items: center; min-height: 44px; text-decoration: underline; text-underline-offset: 3px; }
   .playground-example { margin-top: 8px; min-width: 0; }
   .playground-example summary { min-height: 44px; padding: 10px 0; font-size: 13px; font-weight: 500; cursor: pointer; }
   .playground-example-content { display: flex; flex-direction: column; gap: 12px; padding-top: 4px; }
@@ -156,6 +172,7 @@
 
 @layer responsive {
   @media (max-width: 560px) {
+    .inspection-summary { display: block; margin: 4px 0 0 16px; }
     .page-shell { padding-inline: 24px; }
     .hero { padding-top: 76px; }
     .hero h1 { font-size: 44px; }

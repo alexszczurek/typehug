@@ -1,9 +1,10 @@
 import type { Abbreviation, AnalysisResult, GlueOptions, LanguageProfile, RuleName, TextChange } from "./types.js";
+import { codePoints, tokenize, withoutOpening, withoutPunctuation } from "./tokens.js";
+import type { Token } from "./tokens.js";
 
 const NBSP = "\u00a0";
 const MAX_GROUP_LENGTH = 48;
 const MAX_ENDING_LENGTH = 24;
-const OPENING = /^["'“„‘«‹([{]+/u;
 const CLOSING = /["'”’»›)\]}]+$/u;
 const SENTENCE_END = /[.!?…。！？]$/u;
 const HARD_BREAK = /[\r\n\t\v\f\u0085\u2028\u2029]/u;
@@ -11,36 +12,6 @@ const NONBREAKING_GAP = /^[\u00a0\u202f]+$/u;
 const NUMBER = /^[+\-−]?(?:\p{Nd}+(?:[.,]\p{Nd}+)*|[.,]\p{Nd}+)$/u;
 const INITIAL = /^\p{Lu}\p{M}*\.$/u;
 const INITIAL_TRAILING = /[,;:!?！？"'”’»›)\]}]+$/u;
-
-interface Token {
-  text: string;
-  start: number;
-  end: number;
-  length: number;
-  protected: boolean;
-}
-
-function codePoints(text: string): number {
-  return Array.from(text).length;
-}
-
-function withoutOpening(text: string): string {
-  return text.replace(OPENING, "");
-}
-
-function withoutPunctuation(text: string): string {
-  return withoutOpening(text).replace(/["'”’»›)\]}.,;:!?…。！？]+$/u, "");
-}
-
-function isProtected(text: string): boolean {
-  const bare = withoutPunctuation(text);
-  return (
-    /[a-z][a-z\d+.-]*:\/\//iu.test(bare) ||
-    /^(?:www\.|mailto:|data:)/iu.test(bare) ||
-    /[^@\s]+@[^@\s]+\.[\p{L}\p{N}-]+/u.test(bare) ||
-    /^[\p{L}\p{N}][\p{L}\p{N}.-]*\.[\p{L}]{2,}(?::\d+)?(?:[/?#]\S*)?$/u.test(bare)
-  );
-}
 
 function isWord(text: string): boolean {
   return /[\p{L}\p{N}]/u.test(text);
@@ -66,17 +37,7 @@ export function analyze(text: string, profile: LanguageProfile, options: GlueOpt
   const shortWords = new Set(profile.shortWords);
   const units = new Set(profile.units);
   const abbreviations = new Map(profile.abbreviations.map((entry) => [entry.text, entry.followedBy]));
-  const tokens: Token[] = [];
-  for (const match of text.matchAll(/[^\s\u0085]+/gu)) {
-    const value = match[0];
-    tokens.push({
-      text: value,
-      start: match.index,
-      end: match.index + value.length,
-      length: codePoints(value),
-      protected: !abbreviations.has(withoutOpening(value)) && isProtected(value),
-    });
-  }
+  const tokens = tokenize(text, abbreviations);
   if (tokens.length < 2) return { text, changes: [] };
 
   const gaps = tokens.slice(1).map((token, index) => text.slice(tokens[index]!.end, token.start));
