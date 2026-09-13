@@ -250,6 +250,13 @@ function panelContentWidth(panel: HTMLElement): number {
     - Number.parseFloat(style.borderRightWidth);
 }
 
+function applyWidth(width: number): void {
+  previewWidth.value = String(width);
+  document.documentElement.style.setProperty("--preview-width", `${width}px`);
+  widthValue.value = `${width} px`;
+  previewWidth.setAttribute("aria-valuetext", `${width} pixels`);
+}
+
 function updateWidth(): void {
   const availableWidth = Math.floor(Math.min(...previewPanels.map(panelContentWidth)));
   const maximumWidth = Math.max(1, Math.min(420, availableWidth));
@@ -258,11 +265,64 @@ function updateWidth(): void {
 
   previewWidth.min = String(minimumWidth);
   previewWidth.max = String(maximumWidth);
-  previewWidth.value = String(width);
-  document.documentElement.style.setProperty("--preview-width", `${width}px`);
-  widthValue.value = `${width} px`;
-  previewWidth.setAttribute("aria-valuetext", `${width} pixels`);
+  applyWidth(width);
 }
+
+const watchWrap = element("watch-wrap", HTMLButtonElement);
+const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+let wrapFrame: number | undefined;
+
+function stopWrapping(): void {
+  if (wrapFrame !== undefined) cancelAnimationFrame(wrapFrame);
+  wrapFrame = undefined;
+  desiredWidth = previewWidth.valueAsNumber;
+  widthValue.removeAttribute("aria-live");
+  watchWrap.textContent = reducedMotion.matches ? "Compare widths" : "Watch it wrap";
+}
+
+watchWrap.hidden = false;
+stopWrapping();
+watchWrap.addEventListener("click", () => {
+  if (wrapFrame !== undefined) { stopWrapping(); return; }
+  setEditing(false);
+  updateWidth();
+  const initial = previewWidth.valueAsNumber;
+  const narrow = Number(previewWidth.min);
+  const wide = Number(previewWidth.max);
+  if (reducedMotion.matches) {
+    desiredWidth = initial === narrow ? wide : narrow;
+    applyWidth(desiredWidth);
+    return;
+  }
+  const stops = [initial, narrow, wide, initial];
+  const started = performance.now();
+  watchWrap.textContent = "Stop demo";
+  // Width changes are the demonstration itself. Only update the two text
+  // columns; don't rerun analysis or read layout on every animation frame.
+  widthValue.setAttribute("aria-live", "off");
+  const tick = (now: number): void => {
+    const progress = Math.min((now - started) / 1400, 3);
+    const segment = Math.min(Math.floor(progress), 2);
+    const t = progress - segment;
+    const eased = t * t * (3 - 2 * t);
+    desiredWidth = Math.round(stops[segment]! + (stops[segment + 1]! - stops[segment]!) * eased);
+    applyWidth(desiredWidth);
+    if (progress === 3) { stopWrapping(); return; }
+    wrapFrame = requestAnimationFrame(tick);
+  };
+  wrapFrame = requestAnimationFrame(tick);
+});
+reducedMotion.addEventListener("change", stopWrapping);
+window.addEventListener("resize", stopWrapping);
+document.addEventListener("visibilitychange", () => { if (document.hidden) stopWrapping(); });
+document.addEventListener("keydown", (event) => {
+  if (event.key === "Escape") stopWrapping();
+});
+// Taking over any playground control stops the demonstration at its current width.
+element("playground", HTMLElement).addEventListener("pointerdown", (event) => {
+  if (event.target !== watchWrap && wrapFrame !== undefined) stopWrapping();
+});
+element("playground", HTMLElement).addEventListener("input", stopWrapping);
 
 previewWidth.addEventListener("input", () => {
   if (Number.isFinite(previewWidth.valueAsNumber)) {
