@@ -123,6 +123,7 @@
               </div>
             </details>
           </div>
+          <button id="report-problem" class="report-link" type="button" aria-haspopup="dialog" hidden>Report a problem</button>
           <noscript><p class="no-script">This is a real Typehug result. Enable JavaScript to edit the text or try another example.</p></noscript>
         </section>
 
@@ -194,6 +195,17 @@ glueRuns([
         <nav aria-label="Project resources"><button class="footer-link" type="button" data-copy-page>Copy page as Markdown</button><a href="./index.md">.md</a><a href="./changelog/rss.xml">RSS</a><a href="https://github.com/alexszczurek/typehug/releases/tag/v0.2.0">v0.2.0</a></nav>
       </footer>
     </div>
+    <dialog id="report-dialog" class="report-dialog" aria-labelledby="report-title" aria-describedby="report-help">
+      <form id="report-form" class="report-form">
+        <div class="report-heading"><h2 id="report-title">Report a problem</h2><button id="close-report" class="quiet-button" type="button" autofocus>Close</button></div>
+        <p id="report-help">Describe what you expected in the draft below. Review or remove any text before sharing.</p>
+        <label for="report-draft">Report draft</label>
+        <textarea id="report-draft" rows="12" required spellcheck="false" autocomplete="off" aria-describedby="report-sharing"></textarea>
+        <p id="report-sharing">GitHub issues are public. Copy this draft, then open GitHub and paste it into a new issue. A GitHub account is required.</p>
+        <div class="report-actions"><button id="copy-report" class="button button-primary" type="submit" title="Copy report (⌘/Ctrl+Enter)">Copy report</button><a class="button button-secondary" href="https://github.com/alexszczurek/typehug/issues/new" target="_blank" rel="noopener noreferrer">Open GitHub <span aria-hidden="true">↗</span></a></div>
+        <p id="report-status" class="report-status" role="status" aria-live="polite"></p>
+      </form>
+    </dialog>
     <p id="copy-status" class="copy-status" role="status" aria-live="polite"></p>
   </body>
 </html>

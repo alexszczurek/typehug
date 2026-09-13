@@ -2,6 +2,7 @@ import { analyze, glue, glueRuns, ruleDescriptions, type Locale, type RuleName }
 import examples from "./examples.json";
 import { createInstallCommand, createSnippet, defaultRules, explanationContext, previewSegments, ruleLabels, ruleNames } from "./playground";
 import { createInspectionView, inspectionPageSize } from "./inspection-view";
+import { setupProblemReport } from "./problem-report";
 
 function element<T extends HTMLElement>(
   id: string,
@@ -502,3 +503,10 @@ setEditing(!activeExample);
 selectPackage("en");
 updateWidth();
 openLinkedDetails();
+setupProblemReport(() => ({
+  source: sourceText.value,
+  result,
+  locale,
+  rules: selectedRules(),
+  previewWidth: previewWidth.valueAsNumber,
+}));

@@ -125,6 +125,18 @@
 
   .playground-example pre { max-height: 340px; white-space: pre-wrap; overflow-wrap: anywhere; }
   .no-script { padding-top: 8px; color: var(--color-muted); font-size: 13px; }
+  .report-link { align-self: flex-start; min-height: 44px; padding: 0; font-size: 12px; color: var(--color-muted); text-decoration: underline; text-underline-offset: 3px; }
+  .report-dialog { width: min(640px, calc(100% - 32px)); max-height: calc(100dvh - 32px); padding: 24px; border: 1px solid var(--color-border-control); border-radius: 12px; background: var(--color-canvas); color: var(--color-ink); overflow-y: auto; overscroll-behavior: contain; }
+  .report-dialog::backdrop { background: rgb(24 24 27 / .3); }
+  body:has(.report-dialog[open]) { overflow: hidden; }
+  .report-form { display: flex; flex-direction: column; gap: 12px; }
+  .report-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+  .report-form p { font-size: 13px; color: var(--color-muted); }
+  .report-form label { font-size: 13px; font-weight: 500; }
+  .report-form textarea { width: 100%; min-height: 180px; height: 32dvh; padding: 12px; border: 1px solid var(--color-border-control); border-radius: 6px; background: var(--color-canvas); color: var(--color-ink); font-family: "SFMono-Regular", Consolas, monospace; font-size: 16px; line-height: 1.5; resize: vertical; }
+  .report-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+  .report-actions a { gap: 8px; }
+  .report-status { min-height: 42px; }
   .install-section { gap: 16px; margin-top: 56px; padding-top: 32px; border-top: 1px solid var(--color-border-subtle); }
   .rules-section { margin-top: 24px; }
   .install-command { display: flex; align-items: center; gap: 12px; padding: 4px 8px 4px 16px; min-height: 54px; background: var(--color-surface); border: 1px solid var(--color-border-subtle); border-radius: 7px; }

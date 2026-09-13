@@ -88,6 +88,10 @@ Copy the corrected text or open **Use in your app** for the npm example. The exa
 
 Open **Inspect original text** to identify selected invisible characters and protected address-like text already present in your input. The panel explains nonbreaking spaces, soft hyphens and joining controls in context. It preserves your text and keeps its labels separate from the ordinary preview and copied result. This inspector is currently a website feature. See the [character reference](./docs/inspection.md).
 
+## Reporting a problem
+
+Choose **Report a problem** below the playground. The editable draft includes the original text, result, language, rule settings and preview width. Describe what you expected and remove private text before sharing. Copy the draft, open GitHub, and paste it into a new public issue. A GitHub account is required. Nothing is submitted automatically, and report content is not included in the GitHub link.
+
 ## Links
 
 - [GitHub](https://github.com/alexszczurek/typehug)

@@ -1,0 +1,32 @@
+[
+  {
+    "id": "en-heading", "locale": "en", "kind": "heading",
+    "url": "https://www.gov.uk/apply-renew-passport",
+    "source": "Apply online for a UK passport"
+  },
+  {
+    "id": "en-paragraph", "locale": "en", "kind": "paragraph",
+    "url": "https://www.gov.uk/apply-renew-passport",
+    "source": "Use this service to apply for, renew, replace or update your passport and pay for it online."
+  },
+  {
+    "id": "en-product", "locale": "en", "kind": "product measurements",
+    "url": "https://www.ikea.com/gb/en/p/billy-bookcase-white-00263850/",
+    "source": "Width 80 cm\nDepth 28 cm\nHeight 202 cm\nMax. load/shelf 30 kg"
+  },
+  {
+    "id": "pl-heading", "locale": "pl", "kind": "heading",
+    "url": "https://www.gov.pl/web/gov/uzyskaj-dowod-osobisty",
+    "source": "Uzyskaj dowód osobisty"
+  },
+  {
+    "id": "pl-paragraph", "locale": "pl", "kind": "paragraph excerpt",
+    "url": "https://www.gov.pl/web/cyfryzacja/zalatwiaj-sprawy-urzedowe-online",
+    "source": "Zamiast tracić czas na stanie w kolejce w urzędzie, możesz załatwić sprawy urzędowe w zaciszu swojego domu – przez internet."
+  },
+  {
+    "id": "pl-product", "locale": "pl", "kind": "product measurement",
+    "url": "https://www.ikea.com/pl/pl/p/billy-regal-bialy-00263850/",
+    "source": "Szerokość 80 cm"
+  }
+]
