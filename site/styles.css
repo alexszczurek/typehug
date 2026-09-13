@@ -84,9 +84,7 @@
   .added-space { background: var(--color-join); border-bottom: 2px solid var(--color-muted); border-radius: 1px; }
   .playground-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding: 12px 16px; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface); border-radius: 0 0 11px 11px; }
   .width-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; min-width: 0; }
-  .wrap-control { min-width: 112px; min-height: 44px; padding: 8px; border-radius: 5px; font-size: 12px; font-weight: 500; color: var(--color-ink); }
-  .wrap-control:active { background: var(--color-border-subtle); }
-  @media (hover: hover) { .wrap-control:hover { background: var(--color-border-subtle); } }
+  .wrap-control { min-width: 132px; }
   .width-control { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--color-muted); }
   .width-control input { width: 100px; height: 44px; accent-color: var(--color-ink); cursor: ew-resize; }
   .width-control output { min-width: 47px; font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -210,7 +208,7 @@
     .playground-controls { gap: 8px; padding: 8px 16px 12px; }
     .width-tools { width: 100%; gap: 0 8px; }
     .width-control { flex: 1 1 100%; }
-    .wrap-control { padding-inline: 0; text-align: left; }
+    .wrap-control { width: 100%; }
     .playground-controls > .button { width: 100%; }
     .width-control input { width: 100%; flex: 1; min-width: 0; }
     .code-result { gap: 12px; }
