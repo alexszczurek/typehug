@@ -83,7 +83,8 @@
   .joined, mark { background: var(--color-join); color: inherit; border-radius: 2px; box-decoration-break: clone; -webkit-box-decoration-break: clone; }
   .added-space { background: var(--color-join); border-bottom: 2px solid var(--color-muted); border-radius: 1px; }
   .playground-controls { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px 20px; padding: 12px 16px; border-top: 1px solid var(--color-border-subtle); background: var(--color-surface); border-radius: 0 0 11px 11px; }
-  .width-tools { display: flex; align-items: center; flex-wrap: wrap; gap: 0 16px; min-width: 0; }
+  .playground-intro { display: flex; align-items: center; justify-content: space-between; gap: 16px 24px; flex-wrap: wrap; }
+  .playground-intro .section-heading { flex: 1 1 320px; }
   .wrap-control { min-width: 132px; }
   .width-control { display: flex; align-items: center; gap: 10px; min-width: 0; font-size: 12px; color: var(--color-muted); }
   .width-control input { width: 100px; height: 44px; accent-color: var(--color-ink); cursor: ew-resize; }
@@ -206,10 +207,7 @@
     .preview-panel { min-height: 164px; padding: 20px; }
     .preview-after { border-left: 0; border-top: 1px solid var(--color-border-subtle); }
     .playground-controls { gap: 8px; padding: 8px 16px 12px; }
-    .width-tools { width: 100%; gap: 0 8px; }
     .width-control { flex: 1 1 100%; }
-    .wrap-control { width: 100%; }
-    .playground-controls > .button { width: 100%; }
     .width-control input { width: 100%; flex: 1; min-width: 0; }
     .code-result { gap: 12px; }
     .rule-list > div { grid-template-columns: minmax(0, 1fr) auto; gap: 4px 16px; }

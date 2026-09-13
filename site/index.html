@@ -40,7 +40,7 @@
         </section>
 
         <section id="playground" class="playground section" aria-labelledby="playground-title">
-          <div class="section-heading"><h2 id="playground-title">A little space makes a difference.</h2><p>Try an example or edit the text to see it for yourself.</p></div>
+          <div class="playground-intro"><div class="section-heading"><h2 id="playground-title">A little space makes a difference.</h2><p>Try an example or edit the text to see it for yourself.</p></div><button class="button button-primary wrap-control" id="watch-wrap" type="button" hidden>Watch it wrap</button></div>
           <div class="demo-frame">
             <div class="playground-toolbar">
               <div class="segmented" role="group" aria-label="Playground language">
@@ -66,16 +66,13 @@
                 </div>
               </div>
               <div class="preview-panel preview-after" id="after-panel">
-                <div class="preview-heading"><span class="preview-label">With Typehug</span><span class="preview-hint">Joins highlighted</span></div>
+                <div class="preview-heading"><span class="preview-label">With Typehug</span><button class="quiet-button" id="copy-result" type="button">Copy result</button></div>
                 <p id="after-text" class="preview-text" lang="en">{{DEMO_OUTPUT}}</p>
               </div>
             </div>
             <div class="playground-controls">
-              <div class="width-tools">
                 <div class="width-control"><label for="preview-width">Width</label><input id="preview-width" type="range" min="180" max="420" value="260" step="1"><output id="width-value" for="preview-width">260 px</output></div>
-                <button class="button button-primary wrap-control" id="watch-wrap" type="button" hidden>Watch it wrap</button>
-              </div>
-              <button class="button button-secondary" id="copy-result" type="button">Copy result</button>
+              <span class="preview-hint">Joins highlighted</span>
             </div>
           </div>
           <div class="playground-caption"><p id="text-privacy">Your text stays in this browser.</p><p id="join-count" role="status" aria-live="polite" aria-atomic="true">{{DEMO_COUNT}} nonbreaking spaces added</p></div>
