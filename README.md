@@ -13,6 +13,7 @@ Typehug inserts nonbreaking spaces in Polish and English text. It works with str
 | `@typehug/all` | Both languages, selected explicitly |
 | `@typehug/core` | Engine, shared units, types, and HTML adapter for custom profiles |
 | `@typehug/remark` | Markdown and MDX adapter with check and explicit fix modes |
+| `@typehug/playwright` | Playwright matcher for groups broken in the browser layout |
 
 ```sh
 npm install @typehug/pl
@@ -24,6 +25,12 @@ For Markdown or MDX build pipelines:
 
 ```sh
 npm install -D @typehug/remark remark
+```
+
+For rendered-layout checks in a Playwright suite:
+
+```sh
+npm install -D @playwright/test @typehug/playwright
 ```
 
 Packages provide ESM and TypeScript declarations. Node.js 22 or newer is supported. The browser bundle uses standard JavaScript with Unicode property escapes.
@@ -133,6 +140,27 @@ console.log(checked.messages);
 ```
 
 The adapter processes paragraphs, headings, and table cells. It crosses ordinary inline formatting and visible link labels, while preserving code, HTML, images, footnote references, and MDX expressions or components. See [`@typehug/remark`](packages/remark/README.md) for fix mode and exact boundaries.
+
+## Playwright
+
+`@typehug/playwright` checks whether the browser has broken one of Typehug's eligible groups across rendered lines. It does not change page content.
+
+```ts
+import { expect, test } from "@playwright/test";
+import { typehugMatchers } from "@typehug/playwright";
+
+expect.extend(typehugMatchers);
+
+test("article text at mobile width", async ({ page }) => {
+  await page.goto("http://localhost:3000/article");
+  await expect(page).toHaveNoBrokenGroups({
+    selector: "article",
+    locale: "en",
+  });
+});
+```
+
+Run it in the Playwright viewport projects you support. On failure, the matcher reports the rendered selector, phrase, active Typehug rules, and viewport. It checks explicit Typehug groups rather than claiming a complete widow or typography audit. See [`@typehug/playwright`](packages/playwright/README.md) for boundaries and integration details.
 
 ## Rules
 

@@ -9,7 +9,8 @@
     "packages/pl",
     "packages/en",
     "packages/all",
-    "packages/remark"
+    "packages/remark",
+    "packages/playwright"
   ],
   "engines": {
     "node": ">=22"
@@ -26,6 +27,8 @@
     "site:check": "npm run site:build && tsc --noEmit -p site/tsconfig.json && node --test site/*.test.mjs"
   },
   "devDependencies": {
+    "@playwright/test": "^1.63.0",
+    "@types/node": "^22.20.2",
     "esbuild": "^0.28.2",
     "remark": "^15.0.1",
     "remark-mdx": "^3.1.1",

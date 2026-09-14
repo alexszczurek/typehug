@@ -7,10 +7,16 @@ import { glueHtml as anyHtml } from "@typehug/all/html";
 import { analyze as coreAnalysis, glue as core, glueRuns as coreRuns, ruleDescriptions as coreDescriptions, type AnalysisResult as CoreAnalysisResult, type TextChange as CoreTextChange, type GluedRun as CoreGluedRun } from "@typehug/core";
 import { glueHtml as coreHtml } from "@typehug/core/html";
 import remarkTypehug, { type RemarkTypehugOptions } from "@typehug/remark";
+import { expect, type Page } from "@playwright/test";
+import { typehugMatchers, type TypehugPlaywrightOptions } from "@typehug/playwright";
 
 const options: GlueOptions = { rules: { lastWords: false } };
 const remarkOptions: RemarkTypehugOptions = { locale: "en", fix: true, rules: { lastWords: false } };
 void [remarkTypehug, remarkOptions];
+const browserOptions: TypehugPlaywrightOptions = { selector: "article", locale: "en", rules: { lastWords: false } };
+declare const page: Page;
+expect.extend(typehugMatchers);
+expect(page).toHaveNoBrokenGroups(browserOptions);
 const text: string = glue("Idę w dobrym kierunku.", options);
 const analysis: AnalysisResult = analyze("Idę w dobrym kierunku.", options);
 const analyzedText: string = analysis.text;
@@ -141,3 +147,5 @@ analyze(text, { locale: "en" });
 englishAnalyze(text, { rules: { grammar: true } });
 // @ts-expect-error analysis accepts plain text, not formatted runs
 englishAnalyze([{ text }]);
+// @ts-expect-error rendered checks require a CSS selector
+expect(page).toHaveNoBrokenGroups({ locale: "en" });

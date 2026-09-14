@@ -9,7 +9,7 @@ import { build } from "esbuild";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "typehug-packages-"));
-const packages = ["core", "pl", "en", "all", "remark"];
+const packages = ["core", "pl", "en", "all", "remark", "playwright"];
 const languagePackages = ["core", "pl", "en", "all"];
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
@@ -39,8 +39,8 @@ try {
     const consumer = join(temporary, locale);
     await mkdir(consumer);
     await writeFile(join(consumer, "package.json"), JSON.stringify({ name: `typehug-consumer-${locale}`, private: true, type: "module" }));
-    const required = locale === "all" ? [...languagePackages, "remark"] : ["core", locale];
-    const extras = locale === "all" ? ["remark@^15.0.1"] : [];
+    const required = locale === "all" ? [...languagePackages, "remark", "playwright"] : ["core", locale];
+    const extras = locale === "all" ? ["remark@^15.0.1", "@playwright/test@^1.57.0", "@types/node@^22.0.0"] : [];
     run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", ...extras, ...required.map((name) => tarballs.get(name))], consumer);
 
     const options = locale === "all" ? ', { locale: "pl", rules: { lastWords: false } }' : ', { rules: { lastWords: false } }';
@@ -127,6 +127,19 @@ try {
   await writeFile(join(consumer, "smoke.mjs"), program);
   run(process.execPath, ["smoke.mjs"], consumer);
   console.log("@typehug/remark: packed Remark check and fix imports passed");
+
+  const playwrightConsumer = join(temporary, "playwright");
+  await mkdir(playwrightConsumer);
+  await writeFile(join(playwrightConsumer, "package.json"), JSON.stringify({ name: "typehug-consumer-playwright", private: true, type: "module" }));
+  run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", "@playwright/test@^1.57.0", "@types/node@^22.0.0", tarballs.get("all"), tarballs.get("playwright")], playwrightConsumer);
+  const playwrightProgram = `
+    import assert from "node:assert/strict";
+    import { typehugMatchers } from "@typehug/playwright";
+    assert.equal(typeof typehugMatchers.toHaveNoBrokenGroups, "function");
+  `;
+  await writeFile(join(playwrightConsumer, "smoke.mjs"), playwrightProgram);
+  run(process.execPath, ["smoke.mjs"], playwrightConsumer);
+  console.log("@typehug/playwright: packed matcher import passed");
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }

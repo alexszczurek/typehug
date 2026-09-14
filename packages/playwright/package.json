@@ -1,0 +1,43 @@
+{
+  "name": "@typehug/playwright",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Detect Typehug groups that break across rendered lines in Playwright.",
+  "license": "MIT",
+  "author": "aliszu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexszczurek/typehug.git",
+    "directory": "packages/playwright"
+  },
+  "homepage": "https://github.com/alexszczurek/typehug#readme",
+  "bugs": {
+    "url": "https://github.com/alexszczurek/typehug/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "sideEffects": false,
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@typehug/all": "0.2.0"
+  },
+  "peerDependencies": {
+    "@playwright/test": "^1.57.0"
+  }
+}

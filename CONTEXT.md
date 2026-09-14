@@ -40,3 +40,7 @@ An explanation of selected invisible characters and protected text already prese
 
 **Markdown adapter**:
 A build-time integration that applies an editorial profile to prose nodes in a Markdown or MDX document. In check mode it reports proposed nonbreaking groups; in fix mode it writes the same groups into the syntax tree. It does not infer a document's language.
+
+**Rendered-wrap check**:
+A browser test that reports an explicit Typehug group that spans multiple rendered lines at a chosen viewport. It observes the current layout and never changes page content.
+_Avoid_: Complete typography audit or guaranteed widow detection.

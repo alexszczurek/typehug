@@ -46,6 +46,31 @@ Set `fix: true` to replace those spaces in Markdown text nodes with U+00A0. The 
 
 The adapter processes paragraphs, headings, and table cells. It traverses ordinary inline formatting and visible link labels, preserving Markdown syntax. It deliberately stops at inline code, HTML regions, images, hard breaks, footnote references, and MDX expressions or JSX components. Frontmatter is not inspected.
 
+## Playwright matcher
+
+`@typehug/playwright` exports `typehugMatchers` for Playwright's `expect.extend`.
+
+```ts
+import { expect, test } from "@playwright/test";
+import { typehugMatchers, type TypehugPlaywrightOptions } from "@typehug/playwright";
+
+expect.extend(typehugMatchers);
+
+const options: TypehugPlaywrightOptions = {
+  selector: "article",
+  locale: "en",
+  rules: { lastWords: false },
+};
+
+test("article", async ({ page }) => {
+  await expect(page).toHaveNoBrokenGroups(options);
+});
+```
+
+The matcher evaluates the browser's line rectangles for every eligible Typehug pair under `selector`. It reports a failed assertion when a pair spans more than one rendered line. The page and its layout remain unchanged. Run the test in each Playwright viewport project that matters to the product.
+
+It follows ordinary inline formatting and link labels, but treats code, `data-typehug-skip` regions, hard line breaks, and block boundaries as separate segments. It checks only groups defined by the selected Typehug profile; it does not detect every possible widow or rate a page's typography.
+
 ## Change analysis
 
 Available since `0.2.0`. `analyze` returns corrected text and the accepted space replacements. `AnalysisResult`, `TextChange`, and `ruleDescriptions` support applications that display these changes. Existing `glue`, `glueRuns`, and `glueHtml` behavior remains unchanged.
