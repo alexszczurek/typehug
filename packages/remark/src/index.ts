@@ -20,6 +20,7 @@ interface TextPart {
   node: MarkdownNode & { value: string };
   start: number;
   end: number;
+  sourceOffsets?: readonly (number | undefined)[];
 }
 
 const proseContainers = new Set(["paragraph", "heading", "tableCell"]);
@@ -45,8 +46,8 @@ function pointAt(node: MarkdownNode, index: number): Point | undefined {
   if (!start || typeof node.value !== "string") return undefined;
   let line = start.line;
   let column = start.column;
-  for (const character of node.value.slice(0, index)) {
-    if (character === "\n") {
+  for (let cursor = 0; cursor < index; cursor += 1) {
+    if (node.value[cursor] === "\n") {
       line += 1;
       column = 1;
     } else {
@@ -58,8 +59,40 @@ function pointAt(node: MarkdownNode, index: number): Point | undefined {
   return point;
 }
 
-function changePosition(part: TextPart, change: TextChange): Position | undefined {
+function pointAtSource(source: string, offset: number): Point {
+  let line = 1;
+  let column = 1;
+  for (let cursor = 0; cursor < offset; cursor += 1) {
+    if (source[cursor] === "\n") {
+      line += 1;
+      column = 1;
+    } else if (source[cursor] !== "\r") {
+      column += 1;
+    }
+  }
+  return { line, column, offset };
+}
+
+function sourceOffsetsForText(value: string, raw: string, sourceStart: number): readonly (number | undefined)[] {
+  const offsets: (number | undefined)[] = [];
+  let rawCursor = 0;
+  for (let cursor = 0; cursor < value.length; cursor += 1) {
+    const sourceIndex = raw.indexOf(value[cursor]!, rawCursor);
+    if (sourceIndex === -1) continue;
+    offsets[cursor] = sourceStart + sourceIndex;
+    rawCursor = sourceIndex + 1;
+  }
+  return offsets;
+}
+
+function changePosition(part: TextPart, change: TextChange, source?: string): Position | undefined {
   const index = change.start - part.start;
+  const sourceOffset = part.sourceOffsets?.[index];
+  if (source !== undefined && sourceOffset !== undefined) {
+    const start = pointAtSource(source, sourceOffset);
+    const end = pointAtSource(source, sourceOffset + 1);
+    return { start, end };
+  }
   const start = pointAt(part.node, index);
   const end = pointAt(part.node, index + 1);
   return start && end ? { start, end } : undefined;
@@ -85,6 +118,8 @@ function processSegment(parts: readonly TextPart[], file: VFile, options: Remark
   for (const change of result.changes) {
     const part = parts.find((candidate) => candidate.start <= change.start && change.start < candidate.end);
     if (!part) continue;
+    const index = change.start - part.start;
+    if (part.sourceOffsets !== undefined && part.sourceOffsets[index] === undefined) continue;
     if (options.fix) {
       applyChange(part, change);
       continue;
@@ -92,15 +127,29 @@ function processSegment(parts: readonly TextPart[], file: VFile, options: Remark
     const rules = change.rules.join(",");
     file.message(
       `Keep “${phraseAt(source, change)}” together (${rules}).`,
-      changePosition(part, change),
+      changePosition(part, change, typeof file.value === "string" ? file.value : undefined),
       `typehug:${rules}`,
     );
   }
 }
 
+const voidHtmlElements = new Set([
+  "area", "base", "br", "col", "embed", "hr", "img", "input", "link", "meta", "param", "source", "track", "wbr",
+]);
+
+function htmlTagDelta(value: string): number {
+  const tag = /^<\s*(\/?)\s*([A-Za-z][\w:-]*)/u.exec(value);
+  if (!tag) return 0;
+  if (tag[1] === "/") return -1;
+  if (/\/\s*>$/u.test(value) || voidHtmlElements.has(tag[2]!.toLowerCase())) return 0;
+  return 1;
+}
+
 function processContainer(node: MarkdownNode, file: VFile, options: RemarkTypehugOptions): void {
   let parts: TextPart[] = [];
   let length = 0;
+  let htmlDepth = 0;
+  const original = typeof file.value === "string" ? file.value : undefined;
   const flush = (): void => {
     processSegment(parts, file, options);
     parts = [];
@@ -108,8 +157,28 @@ function processContainer(node: MarkdownNode, file: VFile, options: RemarkTypehu
   };
   const walk = (current: MarkdownNode): void => {
     if (current.type === "text" && typeof current.value === "string") {
-      parts.push({ node: current as MarkdownNode & { value: string }, start: length, end: length + current.value.length });
+      if (htmlDepth > 0) return;
+      const text = current as MarkdownNode & { value: string };
+      const sourceStart = text.position?.start.offset;
+      const sourceEnd = text.position?.end.offset;
+      const raw = original !== undefined && sourceStart !== undefined && sourceEnd !== undefined
+        ? original.slice(sourceStart, sourceEnd)
+        : undefined;
+      const part: TextPart = {
+        node: text,
+        start: length,
+        end: length + text.value.length,
+      };
+      if (raw !== undefined && sourceStart !== undefined) {
+        part.sourceOffsets = sourceOffsetsForText(text.value, raw, sourceStart);
+      }
+      parts.push(part);
       length += current.value.length;
+      return;
+    }
+    if (current.type === "html") {
+      flush();
+      if (typeof current.value === "string") htmlDepth = Math.max(0, htmlDepth + htmlTagDelta(current.value));
       return;
     }
     if (barriers.has(current.type)) {

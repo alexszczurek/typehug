@@ -48,6 +48,6 @@ All Typehug rule families are enabled unless disabled in `rules`.
 
 ## Scope
 
-The adapter processes prose in paragraphs, headings, and table cells. It follows ordinary inline formatting and visible link labels, so a join can cross emphasis or a link boundary. It leaves URLs, fenced and inline code, HTML, images, hard line breaks, footnote references, and MDX expressions or JSX components alone. It does not inspect frontmatter or infer a locale.
+The adapter processes prose in paragraphs, headings, and table cells. It follows ordinary inline formatting and visible link labels, so a join can cross emphasis or a link boundary. It leaves URLs, fenced and inline code, HTML regions, images, hard line breaks, footnote references, and MDX expressions or JSX components alone. It does not inspect frontmatter or infer a locale.
 
 Use this package in a Remark/MDX pipeline. It does not include a Markdown parser or a command-line file walker.

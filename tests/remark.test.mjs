@@ -49,3 +49,19 @@ test("remark requires an explicit locale", async () => {
     /explicit locale/u,
   );
 });
+
+test("remark preserves inline HTML regions while continuing after them", async () => {
+  const file = await remark()
+    .use(remarkTypehug, { locale: "pl", fix: true, rules: { lastWords: false } })
+    .process("<span>Idę w domu.</span> Idę w domu.\n");
+
+  assert.equal(String(file), "<span>Idę w domu.</span> Idę w\u00a0domu.\n");
+});
+
+test("remark diagnostics use source columns after Unicode and Markdown escapes", async () => {
+  const file = await remark()
+    .use(remarkTypehug, { locale: "en", rules: { lastWords: false } })
+    .process("😀 \\* I have a cat.\n");
+
+  assert.deepEqual(file.messages.map((message) => [message.line, message.column]), [[1, 8], [1, 15]]);
+});

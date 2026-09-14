@@ -44,7 +44,7 @@ Check mode is the default. It leaves the syntax tree unchanged and adds a nonfat
 
 Set `fix: true` to replace those spaces in Markdown text nodes with U+00A0. The surrounding Remark pipeline chooses whether and where to write the resulting file. Fix mode emits no messages for applied changes, so a second check is clean.
 
-The adapter processes paragraphs, headings, and table cells. It traverses ordinary inline formatting and visible link labels, preserving Markdown syntax. It deliberately stops at inline code, HTML, images, hard breaks, footnote references, and MDX expressions or JSX components. Frontmatter is not inspected.
+The adapter processes paragraphs, headings, and table cells. It traverses ordinary inline formatting and visible link labels, preserving Markdown syntax. It deliberately stops at inline code, HTML regions, images, hard breaks, footnote references, and MDX expressions or JSX components. Frontmatter is not inspected.
 
 ## Change analysis
 
