@@ -6,8 +6,11 @@ import { glueHtml as englishHtml } from "@typehug/en/html";
 import { glueHtml as anyHtml } from "@typehug/all/html";
 import { analyze as coreAnalysis, glue as core, glueRuns as coreRuns, ruleDescriptions as coreDescriptions, type AnalysisResult as CoreAnalysisResult, type TextChange as CoreTextChange, type GluedRun as CoreGluedRun } from "@typehug/core";
 import { glueHtml as coreHtml } from "@typehug/core/html";
+import remarkTypehug, { type RemarkTypehugOptions } from "@typehug/remark";
 
 const options: GlueOptions = { rules: { lastWords: false } };
+const remarkOptions: RemarkTypehugOptions = { locale: "en", fix: true, rules: { lastWords: false } };
+void [remarkTypehug, remarkOptions];
 const text: string = glue("Idę w dobrym kierunku.", options);
 const analysis: AnalysisResult = analyze("Idę w dobrym kierunku.", options);
 const analyzedText: string = analysis.text;

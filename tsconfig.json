@@ -12,6 +12,9 @@
     },
     {
       "path": "./packages/all"
+    },
+    {
+      "path": "./packages/remark"
     }
   ]
 }

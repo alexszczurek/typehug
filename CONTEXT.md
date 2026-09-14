@@ -37,3 +37,6 @@ _Avoid_: Complete typography audit.
 
 **Text inspection**:
 An explanation of selected invisible characters and protected text already present in the source. An inspection finding describes existing content without treating its presence as an error or a proposed correction.
+
+**Markdown adapter**:
+A build-time integration that applies an editorial profile to prose nodes in a Markdown or MDX document. In check mode it reports proposed nonbreaking groups; in fix mode it writes the same groups into the syntax tree. It does not infer a document's language.

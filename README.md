@@ -12,11 +12,18 @@ Typehug inserts nonbreaking spaces in Polish and English text. It works with str
 | `@typehug/en` | English rules and the shared engine |
 | `@typehug/all` | Both languages, selected explicitly |
 | `@typehug/core` | Engine, shared units, types, and HTML adapter for custom profiles |
+| `@typehug/remark` | Markdown and MDX adapter with check and explicit fix modes |
 
 ```sh
 npm install @typehug/pl
 # Or: npm install @typehug/en
 # Or: npm install @typehug/all
+```
+
+For Markdown or MDX build pipelines:
+
+```sh
+npm install -D @typehug/remark remark
 ```
 
 Packages provide ESM and TypeScript declarations. Node.js 22 or newer is supported. The browser bundle uses standard JavaScript with Unicode property escapes.
@@ -108,7 +115,24 @@ Adjacent runs are interpreted as one text segment, even if a word is split betwe
 - `skip: true` protects a run and stops joins on both sides.
 - Empty runs may carry either boundary marker.
 
-Notion, Slate, ProseMirror, and Markdown AST adapters are not included in `0.2.0`. Map their text and paragraph boundaries to runs explicitly.
+Notion, Slate, and ProseMirror adapters are not included in `0.2.0`. Map their text and paragraph boundaries to runs explicitly.
+
+## Markdown and MDX
+
+`@typehug/remark` adds Typehug to a Remark pipeline. It requires an explicit `locale` and reports proposed changes by default, without changing the document. Set `fix: true` to modify prose text nodes.
+
+```ts
+import { remark } from "remark";
+import remarkTypehug from "@typehug/remark";
+
+const checked = await remark()
+  .use(remarkTypehug, { locale: "en" })
+  .process("I have 30 min.\n");
+
+console.log(checked.messages);
+```
+
+The adapter processes paragraphs, headings, and table cells. It crosses ordinary inline formatting and visible link labels, while preserving code, HTML, images, footnote references, and MDX expressions or components. See [`@typehug/remark`](packages/remark/README.md) for fix mode and exact boundaries.
 
 ## Rules
 

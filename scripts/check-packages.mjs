@@ -9,7 +9,8 @@ import { build } from "esbuild";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "typehug-packages-"));
-const packages = ["core", "pl", "en", "all"];
+const packages = ["core", "pl", "en", "all", "remark"];
+const languagePackages = ["core", "pl", "en", "all"];
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
 function run(command, args, cwd = root) {
@@ -38,8 +39,9 @@ try {
     const consumer = join(temporary, locale);
     await mkdir(consumer);
     await writeFile(join(consumer, "package.json"), JSON.stringify({ name: `typehug-consumer-${locale}`, private: true, type: "module" }));
-    const required = locale === "all" ? packages : ["core", locale];
-    run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", ...required.map((name) => tarballs.get(name))], consumer);
+    const required = locale === "all" ? [...languagePackages, "remark"] : ["core", locale];
+    const extras = locale === "all" ? ["remark@^15.0.1"] : [];
+    run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", ...extras, ...required.map((name) => tarballs.get(name))], consumer);
 
     const options = locale === "all" ? ', { locale: "pl", rules: { lastWords: false } }' : ', { rules: { lastWords: false } }';
     const text = locale === "en" ? "I see a cat." : "Idę w domu.";
@@ -105,6 +107,26 @@ try {
       console.log("@typehug/all: packed analysis, text, runs, HTML and TypeScript imports passed");
     }
   }
+
+  const consumer = join(temporary, "remark");
+  await mkdir(consumer);
+  await writeFile(join(consumer, "package.json"), JSON.stringify({ name: "typehug-consumer-remark", private: true, type: "module" }));
+  run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", "remark@^15.0.1", ...packages.map((name) => tarballs.get(name))], consumer);
+  const program = `
+    import assert from "node:assert/strict";
+    import { remark } from "remark";
+    import remarkTypehug from "@typehug/remark";
+    const checked = await remark().use(remarkTypehug, { locale: "en", rules: { lastWords: false } }).process("I have 30 min.\\n");
+    assert.equal(String(checked), "I have 30 min.\\n");
+    assert.deepEqual(checked.messages.map((message) => [message.source, message.ruleId]), [
+      ["typehug", "shortWords"], ["typehug", "units"],
+    ]);
+    const fixed = await remark().use(remarkTypehug, { locale: "en", fix: true, rules: { lastWords: false } }).process("I have 30 min.\\n");
+    assert.equal(String(fixed), "I\\u00a0have 30\\u00a0min.\\n");
+  `;
+  await writeFile(join(consumer, "smoke.mjs"), program);
+  run(process.execPath, ["smoke.mjs"], consumer);
+  console.log("@typehug/remark: packed Remark check and fix imports passed");
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }

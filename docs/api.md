@@ -24,6 +24,28 @@ Both language roots and `/profile` exports expose `profile`. A profile is frozen
 
 Missing, unknown, or differently cased locale values throw `RangeError` at runtime. There is no fallback, browser-language lookup, or locale normalization.
 
+## Markdown and MDX adapter
+
+`@typehug/remark` is a Remark plugin for Markdown and MDX. It requires `locale: "pl" | "en"`; the adapter does not infer the language from a file, frontmatter, or the runtime.
+
+```ts
+import { remark } from "remark";
+import remarkTypehug, { type RemarkTypehugOptions } from "@typehug/remark";
+
+const options: RemarkTypehugOptions = {
+  locale: "en",
+  rules: { lastWords: false },
+};
+
+const file = await remark().use(remarkTypehug, options).process("I have 30 min.\n");
+```
+
+Check mode is the default. It leaves the syntax tree unchanged and adds a nonfatal VFile message for each accepted Typehug change. Messages point at the original U+0020 space and use the `typehug` source with the supporting rule names as `ruleId`.
+
+Set `fix: true` to replace those spaces in Markdown text nodes with U+00A0. The surrounding Remark pipeline chooses whether and where to write the resulting file. Fix mode emits no messages for applied changes, so a second check is clean.
+
+The adapter processes paragraphs, headings, and table cells. It traverses ordinary inline formatting and visible link labels, preserving Markdown syntax. It deliberately stops at inline code, HTML, images, hard breaks, footnote references, and MDX expressions or JSX components. Frontmatter is not inspected.
+
 ## Change analysis
 
 Available since `0.2.0`. `analyze` returns corrected text and the accepted space replacements. `AnalysisResult`, `TextChange`, and `ruleDescriptions` support applications that display these changes. Existing `glue`, `glueRuns`, and `glueHtml` behavior remains unchanged.
