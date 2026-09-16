@@ -71,6 +71,19 @@ The matcher evaluates the browser's line rectangles for every eligible Typehug p
 
 It follows ordinary inline formatting and link labels, but treats code, `data-typehug-skip` regions, hard line breaks, and block boundaries as separate segments. It checks only groups defined by the selected Typehug profile; it does not detect every possible widow or rate a page's typography.
 
+## Command-line source check
+
+`@typehug/cli` provides a `typehug` executable for `.md`, `.mdx`, `.html`, and `.htm` files. It accepts file paths and glob patterns plus a required `--locale en|pl` option. It does not infer a language from a file name or its contents.
+
+```sh
+typehug check "content/**/*.{md,mdx,html}" --locale en
+typehug fix content/about.mdx --locale pl
+```
+
+`check` leaves files unchanged, prints each proposed group, and exits with status 1 if it finds one. It exits with status 0 when clean and status 2 for command, file, or pattern errors. `fix` applies only reported groups and exits with status 0 after successful processing. It writes nothing when a file is already clean.
+
+Markdown and MDX use the Remark adapter, so diagnostics contain original line and column positions and fixes preserve Markdown syntax. HTML follows the same text boundaries as `glueHtml`: it crosses ordinary inline formatting and visible link labels, and skips protected subtrees. Its diagnostics include a line and column when parse5 can map the changed literal space directly to source; otherwise they name the file and the proposed group. HTML fixes serialize through parse5 and can normalize entity syntax, quotes, tag case, or malformed markup.
+
 ## Change analysis
 
 Available since `0.2.0`. `analyze` returns corrected text and the accepted space replacements. `AnalysisResult`, `TextChange`, and `ruleDescriptions` support applications that display these changes. Existing `glue`, `glueRuns`, and `glueHtml` behavior remains unchanged.

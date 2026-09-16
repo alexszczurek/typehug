@@ -44,3 +44,7 @@ A build-time integration that applies an editorial profile to prose nodes in a M
 **Rendered-wrap check**:
 A browser test that reports an explicit Typehug group that spans multiple rendered lines at a chosen viewport. It observes the current layout and never changes page content.
 _Avoid_: Complete typography audit or guaranteed widow detection.
+
+**Source check**:
+A command-line check of Markdown, MDX, or HTML source files that reports proposed nonbreaking groups before rendering. Check mode changes no files; explicit fix mode writes accepted groups. It uses a chosen editorial profile and does not infer a file's language.
+_Avoid_: Rendered-layout test or complete typography audit.

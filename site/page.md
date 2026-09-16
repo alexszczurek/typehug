@@ -62,6 +62,17 @@ glue("Idę w dobrym kierunku.", { locale: "pl" });
 
 The combined package requires an explicit locale. There is no automatic language detection.
 
+## Source checks and CI
+
+Use the CLI to check Markdown, MDX, and HTML before a page reaches the browser:
+
+```sh
+npx typehug check "content/**/*.{md,mdx,html}" --locale en
+npx typehug fix "content/**/*.{md,mdx,html}" --locale en
+```
+
+`check` reports each proposed group and exits with status 1 when it finds one, which makes it suitable for CI. It changes no files. `fix` is explicit and writes U+00A0 only for those groups. For layout-specific checks at real mobile widths, use the Playwright matcher.
+
 ## Five rule families
 
 - `shortWords`: English a, A, I; Polish a, i, o, u, w, z and their uppercase forms.
@@ -101,3 +112,4 @@ Choose **Report a problem** below the playground. The editable draft includes th
 - [English on npm](https://www.npmjs.com/package/@typehug/en)
 - [Polish on npm](https://www.npmjs.com/package/@typehug/pl)
 - [Both languages on npm](https://www.npmjs.com/package/@typehug/all)
+- [CLI on npm](https://www.npmjs.com/package/@typehug/cli)

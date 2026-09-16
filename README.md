@@ -14,6 +14,7 @@ Typehug inserts nonbreaking spaces in Polish and English text. It works with str
 | `@typehug/core` | Engine, shared units, types, and HTML adapter for custom profiles |
 | `@typehug/remark` | Markdown and MDX adapter with check and explicit fix modes |
 | `@typehug/playwright` | Playwright matcher for groups broken in the browser layout |
+| `@typehug/cli` | Command-line source checker and explicit fixer |
 
 ```sh
 npm install @typehug/pl
@@ -31,6 +32,12 @@ For rendered-layout checks in a Playwright suite:
 
 ```sh
 npm install -D @playwright/test @typehug/playwright
+```
+
+For source checks in a project or CI:
+
+```sh
+npm install -D @typehug/cli
 ```
 
 Packages provide ESM and TypeScript declarations. Node.js 22 or newer is supported. The browser bundle uses standard JavaScript with Unicode property escapes.
@@ -161,6 +168,20 @@ test("article text at mobile width", async ({ page }) => {
 ```
 
 Run it in the Playwright viewport projects you support. On failure, the matcher reports the rendered selector, phrase, active Typehug rules, and viewport. It checks explicit Typehug groups rather than claiming a complete widow or typography audit. See [`@typehug/playwright`](packages/playwright/README.md) for boundaries and integration details.
+
+## Command line
+
+`@typehug/cli` checks Markdown, MDX, and HTML source files before they reach the browser. It needs a selected locale and never guesses a file's language.
+
+```sh
+npx typehug check "content/**/*.{md,mdx,html}" --locale en
+# content/article.md:1:2  Keep “I have” together (shortWords).
+# Typehug found 1 group in 1 file.
+
+npx typehug fix "content/**/*.{md,mdx,html}" --locale en
+```
+
+`check` changes no files and exits with status 1 when it finds a proposed group, which makes it suitable for CI. `fix` is the only command that writes U+00A0 to a file. Markdown and MDX retain their syntax; fixing HTML uses the same parse5 serialization as `glueHtml`, so entity spellings and malformed markup may normalize. See [`@typehug/cli`](packages/cli/README.md) for command behavior and exit codes.
 
 ## Rules
 

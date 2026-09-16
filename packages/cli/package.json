@@ -1,0 +1,47 @@
+{
+  "name": "@typehug/cli",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "Check and fix Polish and English typography in Markdown, MDX, and HTML files.",
+  "license": "MIT",
+  "author": "aliszu",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/alexszczurek/typehug.git",
+    "directory": "packages/cli"
+  },
+  "homepage": "https://github.com/alexszczurek/typehug#readme",
+  "bugs": {
+    "url": "https://github.com/alexszczurek/typehug/issues"
+  },
+  "engines": {
+    "node": ">=22"
+  },
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    }
+  },
+  "bin": {
+    "typehug": "./dist/bin.js"
+  },
+  "files": [
+    "dist",
+    "README.md",
+    "LICENSE"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "dependencies": {
+    "@typehug/all": "0.2.0",
+    "@typehug/remark": "0.2.0",
+    "glob": "^13.0.6",
+    "parse5": "^8.0.0",
+    "remark": "^15.0.1",
+    "remark-mdx": "^3.1.1"
+  }
+}

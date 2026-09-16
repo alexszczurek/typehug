@@ -9,6 +9,7 @@ import { glueHtml as coreHtml } from "@typehug/core/html";
 import remarkTypehug, { type RemarkTypehugOptions } from "@typehug/remark";
 import { expect, type Page } from "@playwright/test";
 import { typehugMatchers, type TypehugPlaywrightOptions } from "@typehug/playwright";
+import { run, type TypehugCliIO } from "@typehug/cli";
 
 const options: GlueOptions = { rules: { lastWords: false } };
 const remarkOptions: RemarkTypehugOptions = { locale: "en", fix: true, rules: { lastWords: false } };
@@ -17,6 +18,9 @@ const browserOptions: TypehugPlaywrightOptions = { selector: "article", locale: 
 declare const page: Page;
 expect.extend(typehugMatchers);
 expect(page).toHaveNoBrokenGroups(browserOptions);
+const cliIO: TypehugCliIO = { stdout: () => {}, stderr: () => {} };
+const cliStatus: Promise<number> = run(["check", "content.md", "--locale", "en"], cliIO);
+void cliStatus;
 const text: string = glue("Idę w dobrym kierunku.", options);
 const analysis: AnalysisResult = analyze("Idę w dobrym kierunku.", options);
 const analyzedText: string = analysis.text;

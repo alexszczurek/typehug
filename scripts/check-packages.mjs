@@ -9,7 +9,7 @@ import { build } from "esbuild";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const temporary = await mkdtemp(join(tmpdir(), "typehug-packages-"));
-const packages = ["core", "pl", "en", "all", "remark", "playwright"];
+const packages = ["core", "pl", "en", "all", "remark", "playwright", "cli"];
 const languagePackages = ["core", "pl", "en", "all"];
 const npm = process.platform === "win32" ? "npm.cmd" : "npm";
 
@@ -29,6 +29,7 @@ try {
     const [packed] = JSON.parse(run(npm, ["pack", "--workspace", `@typehug/${name}`, "--json", "--pack-destination", temporary]));
     assert(packed.files.some((file) => file.path === "dist/index.js"));
     assert(packed.files.some((file) => file.path === "dist/index.d.ts"));
+    if (name === "cli") assert(packed.files.some((file) => file.path === "dist/bin.js"));
     assert(packed.files.some((file) => file.path === "README.md"));
     assert(packed.files.some((file) => file.path === "LICENSE"));
     assert(!packed.files.some((file) => file.path.startsWith("src/") || file.path.endsWith("tsbuildinfo")));
@@ -39,7 +40,7 @@ try {
     const consumer = join(temporary, locale);
     await mkdir(consumer);
     await writeFile(join(consumer, "package.json"), JSON.stringify({ name: `typehug-consumer-${locale}`, private: true, type: "module" }));
-    const required = locale === "all" ? [...languagePackages, "remark", "playwright"] : ["core", locale];
+    const required = locale === "all" ? [...languagePackages, "remark", "playwright", "cli"] : ["core", locale];
     const extras = locale === "all" ? ["remark@^15.0.1", "@playwright/test@^1.57.0", "@types/node@^22.0.0"] : [];
     run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", ...extras, ...required.map((name) => tarballs.get(name))], consumer);
 
@@ -140,6 +141,15 @@ try {
   await writeFile(join(playwrightConsumer, "smoke.mjs"), playwrightProgram);
   run(process.execPath, ["smoke.mjs"], playwrightConsumer);
   console.log("@typehug/playwright: packed matcher import passed");
+
+  const cliConsumer = join(temporary, "cli");
+  await mkdir(cliConsumer);
+  await writeFile(join(cliConsumer, "package.json"), JSON.stringify({ name: "typehug-consumer-cli", private: true, type: "module" }));
+  run(npm, ["install", "--ignore-scripts", "--no-audit", "--no-fund", "--package-lock=false", ...packages.map((name) => tarballs.get(name))], cliConsumer);
+  await writeFile(join(cliConsumer, "article.md"), "I have a feature.\n");
+  run(process.execPath, [join(cliConsumer, "node_modules/@typehug/cli/dist/bin.js"), "fix", "article.md", "--locale", "en"], cliConsumer);
+  assert.equal(await readFile(join(cliConsumer, "article.md"), "utf8"), "I\u00a0have a\u00a0feature.\n");
+  console.log("@typehug/cli: packed command-line fix passed");
 } finally {
   await rm(temporary, { recursive: true, force: true });
 }

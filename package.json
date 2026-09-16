@@ -10,7 +10,8 @@
     "packages/en",
     "packages/all",
     "packages/remark",
-    "packages/playwright"
+    "packages/playwright",
+    "packages/cli"
   ],
   "engines": {
     "node": ">=22"
