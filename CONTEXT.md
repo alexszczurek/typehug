@@ -45,6 +45,10 @@ A build-time integration that applies an editorial profile to prose nodes in a M
 A browser test that reports an explicit Typehug group that spans multiple rendered lines at a chosen viewport. It observes the current layout and never changes page content.
 _Avoid_: Complete typography audit or guaranteed widow detection.
 
+**Rendered widow check**:
+A browser test that reports a selected prose block whose final rendered line has fewer words than the chosen threshold, or is below an optional width ratio. It is a layout policy chosen by the project, evaluated at an actual viewport.
+_Avoid_: Universal measure of text quality or a source-text correction.
+
 **Source check**:
 A command-line check of Markdown, MDX, or HTML source files that reports proposed nonbreaking groups before rendering. Check mode changes no files; explicit fix mode writes accepted groups. It uses a chosen editorial profile and does not infer a file's language.
 _Avoid_: Rendered-layout test or complete typography audit.

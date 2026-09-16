@@ -71,7 +71,7 @@ npx typehug check "content/**/*.{md,mdx,html}" --locale en
 npx typehug fix "content/**/*.{md,mdx,html}" --locale en
 ```
 
-`check` reports each proposed group and exits with status 1 when it finds one, which makes it suitable for CI. It changes no files. `fix` is explicit and writes U+00A0 only for those groups. For layout-specific checks at real mobile widths, use the Playwright matcher.
+`check` reports each proposed group and exits with status 1 when it finds one, which makes it suitable for CI. It changes no files. `fix` is explicit and writes U+00A0 only for those groups. For layout-specific checks at real mobile widths, the Playwright package can check both broken Typehug groups and one-word final paragraph lines.
 
 ## Five rule families
 

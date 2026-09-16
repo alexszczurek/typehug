@@ -169,6 +169,14 @@ test("article text at mobile width", async ({ page }) => {
 
 Run it in the Playwright viewport projects you support. On failure, the matcher reports the rendered selector, phrase, active Typehug rules, and viewport. It checks explicit Typehug groups rather than claiming a complete widow or typography audit. See [`@typehug/playwright`](packages/playwright/README.md) for boundaries and integration details.
 
+For a separate layout policy, use the same package to reject a one-word final line in selected prose blocks:
+
+```ts
+await expect(page).toHaveNoWidows({ selector: "article p" });
+```
+
+The default expects at least two words on the last rendered line. `minWordsOnLastLine` and the optional `minLastLineWidthRatio` make that policy stricter. This observes the actual viewport and never changes content; it is a chosen rendering heuristic rather than a universal quality score.
+
 ## Command line
 
 `@typehug/cli` checks Markdown, MDX, and HTML source files before they reach the browser. It needs a selected locale and never guesses a file's language.

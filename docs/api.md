@@ -71,6 +71,18 @@ The matcher evaluates the browser's line rectangles for every eligible Typehug p
 
 It follows ordinary inline formatting and link labels, but treats code, `data-typehug-skip` regions, hard line breaks, and block boundaries as separate segments. It checks only groups defined by the selected Typehug profile; it does not detect every possible widow or rate a page's typography.
 
+`toHaveNoWidows` is a separate matcher for a selected prose block's final rendered line. It has no locale because it measures line geometry and word count rather than applying a Typehug language profile.
+
+```ts
+await expect(page).toHaveNoWidows({
+  selector: "article p",
+  minWordsOnLastLine: 2,
+  minLastLineWidthRatio: 0.35,
+});
+```
+
+`minWordsOnLastLine` defaults to `2` and must be an integer of at least `2`. `minLastLineWidthRatio` is optional, must be greater than `0` and at most `1`, and compares the final line with the widest earlier line in the same prose segment. The matcher skips code and `data-typehug-skip` regions and stops at `<br>` and block boundaries. It reports the final words and the measured ratio when relevant. Choose paragraph-level selectors such as `article p`; this is a rendering heuristic that must match the editorial policy of the project, not a complete typography audit.
+
 ## Command-line source check
 
 `@typehug/cli` provides a `typehug` executable for `.md`, `.mdx`, `.html`, and `.htm` files. It accepts file paths and glob patterns plus a required `--locale en|pl` option. It does not infer a language from a file name or its contents.

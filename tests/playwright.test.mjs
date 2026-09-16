@@ -55,3 +55,45 @@ test("fails clearly when the selector does not match", async () => {
     );
   });
 });
+
+test("reports a single word on a rendered paragraph's final line", async () => {
+  await withPage(async (page) => {
+    await page.setContent('<style>p { width: 120px; margin: 0; font: 16px/20px monospace; }</style><article><p>A sentence with a short tail.</p></article>');
+
+    await assert.rejects(
+      expect(page).toHaveNoWidows({ selector: "article p" }),
+      /“tail” \(1 word\)/u,
+    );
+  });
+});
+
+test("allows a final line that keeps two words together", async () => {
+  await withPage(async (page) => {
+    await page.setContent('<style>p { width: 120px; margin: 0; font: 16px/20px monospace; }</style><article><p>A sentence with a short final&nbsp;tail.</p></article>');
+
+    await expect(page).toHaveNoWidows({ selector: "article p" });
+  });
+});
+
+test("can flag a visually narrow final line even when it has two words", async () => {
+  await withPage(async (page) => {
+    await page.setContent('<style>p { width: 150px; margin: 0; font: 16px/20px monospace; }</style><article><p>A longer sentence fills the earlier line then ends here.</p></article>');
+
+    await assert.rejects(
+      expect(page).toHaveNoWidows({ selector: "article p", minLastLineWidthRatio: 0.8 }),
+      /of the widest earlier line/u,
+    );
+  });
+});
+
+test("widow matcher skips code and fails clearly for invalid options", async () => {
+  await withPage(async (page) => {
+    await page.setContent('<style>p { width: 70px; margin: 0; font: 16px/20px monospace; }</style><article><p><code>A sentence with a tail.</code></p></article>');
+
+    await expect(page).toHaveNoWidows({ selector: "article p" });
+    await assert.rejects(
+      expect(page).toHaveNoWidows({ selector: "article p", minWordsOnLastLine: 1 }),
+      /minWordsOnLastLine/u,
+    );
+  });
+});

@@ -8,16 +8,18 @@ import { analyze as coreAnalysis, glue as core, glueRuns as coreRuns, ruleDescri
 import { glueHtml as coreHtml } from "@typehug/core/html";
 import remarkTypehug, { type RemarkTypehugOptions } from "@typehug/remark";
 import { expect, type Page } from "@playwright/test";
-import { typehugMatchers, type TypehugPlaywrightOptions } from "@typehug/playwright";
+import { typehugMatchers, type TypehugPlaywrightOptions, type TypehugWidowOptions } from "@typehug/playwright";
 import { run, type TypehugCliIO } from "@typehug/cli";
 
 const options: GlueOptions = { rules: { lastWords: false } };
 const remarkOptions: RemarkTypehugOptions = { locale: "en", fix: true, rules: { lastWords: false } };
 void [remarkTypehug, remarkOptions];
 const browserOptions: TypehugPlaywrightOptions = { selector: "article", locale: "en", rules: { lastWords: false } };
+const widowOptions: TypehugWidowOptions = { selector: "article p", minWordsOnLastLine: 2, minLastLineWidthRatio: 0.35 };
 declare const page: Page;
 expect.extend(typehugMatchers);
 expect(page).toHaveNoBrokenGroups(browserOptions);
+expect(page).toHaveNoWidows(widowOptions);
 const cliIO: TypehugCliIO = { stdout: () => {}, stderr: () => {} };
 const cliStatus: Promise<number> = run(["check", "content.md", "--locale", "en"], cliIO);
 void cliStatus;
@@ -153,3 +155,5 @@ englishAnalyze(text, { rules: { grammar: true } });
 englishAnalyze([{ text }]);
 // @ts-expect-error rendered checks require a CSS selector
 expect(page).toHaveNoBrokenGroups({ locale: "en" });
+// @ts-expect-error rendered widow checks require a CSS selector
+expect(page).toHaveNoWidows({ minWordsOnLastLine: 2 });

@@ -137,6 +137,7 @@ try {
     import assert from "node:assert/strict";
     import { typehugMatchers } from "@typehug/playwright";
     assert.equal(typeof typehugMatchers.toHaveNoBrokenGroups, "function");
+    assert.equal(typeof typehugMatchers.toHaveNoWidows, "function");
   `;
   await writeFile(join(playwrightConsumer, "smoke.mjs"), playwrightProgram);
   run(process.execPath, ["smoke.mjs"], playwrightConsumer);
